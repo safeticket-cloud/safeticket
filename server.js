@@ -53,6 +53,45 @@ app.post('/api/registro', async (req, res) => {
   }
 });
 
+// Ruta API para Iniciar Sesión (Login)
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Buscar si el correo existe en la base de datos
+    const [rows] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
+    
+    if (rows.length === 0) {
+      return res.status(401).json({ exito: false, mensaje: 'Correo o contraseña incorrectos.' });
+    }
+
+    const usuario = rows[0];
+
+    // 2. Comparar la contraseña escrita con la encriptada en MySQL
+    const passwordValida = await bcrypt.compare(password, usuario.clave_hash);
+    
+    if (!passwordValida) {
+      return res.status(401).json({ exito: false, mensaje: 'Correo o contraseña incorrectos.' });
+    }
+
+    // 3. Si todo está bien, enviamos los datos básicos para el Dashboard
+    console.log(`✅ Ingreso exitoso: ${usuario.email}`);
+    res.json({
+      exito: true,
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        rol: usuario.rol,
+        saldo: usuario.saldo_disponible
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error en login:', error);
+    res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
+  }
+});
+
 // 3. Iniciar el servidor
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {

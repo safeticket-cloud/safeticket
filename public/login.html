@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTicket | Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { brand: { bg: '#F8FAFC', text: '#1E293B', gold: '#C9A227' } } } } }
+    </script>
+</head>
+<body class="bg-brand-bg flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
+        <div class="flex justify-center items-center mb-6">
+            <i class="fa-solid fa-ticket text-brand-gold text-3xl mr-2"></i>
+            <span class="font-serif text-3xl font-bold text-brand-text">Safe<span class="text-brand-gold">Ticket</span></span>
+        </div>
+        <h2 class="text-xl text-gray-600 mb-8">Bienvenido de vuelta a tu Bóveda</h2>
+
+        <form id="loginForm" class="space-y-5" onsubmit="iniciarSesion(event)">
+            <div class="text-left">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                <div class="relative">
+                    <i class="fa-regular fa-envelope absolute left-3 top-3.5 text-gray-400"></i>
+                    <input type="email" id="email" required class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:border-brand-gold outline-none" placeholder="tu@correo.com">
+                </div>
+            </div>
+            <div class="text-left">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-3 top-3.5 text-gray-400"></i>
+                    <input type="password" id="password" required class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:border-brand-gold outline-none" placeholder="••••••••">
+                </div>
+            </div>
+            
+            <button type="submit" id="btnAcceder" class="w-full bg-brand-gold text-white font-bold py-3 rounded-lg hover:bg-yellow-600 transition-colors shadow-lg">
+                Acceder a mi Cuenta
+            </button>
+        </form>
+        <p class="mt-6 text-sm text-gray-500">¿No tienes cuenta? <a href="/registro.html" class="text-brand-gold font-bold hover:underline">Regístrate aquí</a></p>
+    </div>
+
+    <script>
+        function iniciarSesion(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnAcceder');
+            btn.innerText = "Verificando...";
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.exito) {
+                    // Guardamos los datos del usuario en el navegador para usarlos en el dashboard
+                    localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                    window.location.href = '/dashboard.html';
+                } else {
+                    alert('Error: ' + data.mensaje);
+                    btn.innerText = "Acceder a mi Cuenta";
+                }
+            })
+            .catch(err => {
+                alert('Error de conexión');
+                btn.innerText = "Acceder a mi Cuenta";
+            });
+        }
+    </script>
+</body>
+</html>
