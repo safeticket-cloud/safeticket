@@ -113,15 +113,16 @@
 
             <div id="step-3" class="step-content hidden space-y-6">
                 <h3 class="text-xl font-serif font-semibold text-brand-text mb-6">Verificación de Identidad (KYC)</h3>
-                <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-gold hover:bg-brand-goldLight/20 group">
-                    <input type="file" id="file-upload" class="hidden" accept="image/*,.pdf">
+                
+                <div id="drop-zone" onclick="document.getElementById('file-upload').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-gold hover:bg-brand-goldLight/20 group transition-all">
+                    <input type="file" id="file-upload" class="hidden" accept="image/*,.pdf" onchange="handleFile(this.files[0])">
                     <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400"></i>
+                        <i id="upload-icon" class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400"></i>
                     </div>
-                    <p class="font-medium text-gray-700">Arrastra tu ID o Pasaporte aquí</p>
-                    <p class="text-xs text-gray-400 mt-1">JPG, PNG o PDF (Máx. 5MB)</p>
-                    <p id="file-name" class="text-sm text-brand-gold font-bold mt-3 hidden"></p>
+                    <p id="upload-text" class="font-medium text-gray-700">Haz clic o arrastra tu ID aquí</p>
+                    <p class="text-xs text-gray-400 mt-1">Obligatorio para verificar identidad</p>
                 </div>
+
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-100 mt-4">
                     <label class="flex items-start space-x-3 cursor-pointer">
                         <input type="checkbox" id="legal-check" class="mt-1 w-5 h-5 text-brand-gold border-gray-300 rounded focus:ring-brand-gold">
@@ -147,6 +148,15 @@
         let currentStep = 1;
         const totalSteps = 3;
 
+        // Manejo visual del archivo subido
+        function handleFile(file) {
+            if(file) {
+                document.getElementById('upload-text').innerText = 'Archivo cargado: ' + file.name;
+                document.getElementById('upload-text').classList.add('text-brand-gold');
+                document.getElementById('upload-icon').classList.replace('text-gray-400', 'text-green-500');
+            }
+        }
+
         function nextStep() {
             if (!validateCurrentStep()) return;
 
@@ -158,28 +168,33 @@
             } else {
                 const btnText = document.getElementById('nextBtnText');
                 const originalText = btnText.innerText;
-                btnText.innerText = 'Procesando...';
+                btnText.innerText = 'Subiendo documento...';
 
-                const userData = {
-                    nombre: document.getElementById('firstName').value,
-                    apellido: document.getElementById('lastName').value,
-                    tipo_doc: document.getElementById('tipo_doc').value,
-                    num_doc: document.getElementById('num_doc').value,
-                    fecha_nacimiento: document.getElementById('dob').value,
-                    telefono: document.getElementById('telefono').value,
-                    email: document.getElementById('email').value,
-                    password: document.getElementById('password').value
-                };
+                // Usamos FormData para poder enviar el archivo de imagen al servidor
+                const formData = new FormData();
+                formData.append('nombre', document.getElementById('firstName').value);
+                formData.append('apellido', document.getElementById('lastName').value);
+                formData.append('tipo_doc', document.getElementById('tipo_doc').value);
+                formData.append('num_doc', document.getElementById('num_doc').value);
+                formData.append('fecha_nacimiento', document.getElementById('dob').value);
+                formData.append('telefono', document.getElementById('telefono').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('password', document.getElementById('password').value);
+                
+                const fileInput = document.getElementById('file-upload');
+                if(fileInput.files[0]) {
+                    formData.append('documento_archivo', fileInput.files[0]);
+                }
 
+                // El navegador configura los headers automáticamente para FormData
                 fetch('/api/registro', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userData)
+                    body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
                     if(data.exito) {
-                        alert('¡Cuenta creada! Tu identidad está PENDIENTE de verificación. Inicia sesión ahora.');
+                        alert('¡Cuenta creada y documento enviado! Tu identidad está PENDIENTE de verificación. Inicia sesión ahora.');
                         window.location.href = '/login.html';
                     } else {
                         alert('Error: ' + data.mensaje);
@@ -187,7 +202,7 @@
                     }
                 })
                 .catch(error => {
-                    alert('Error conectando con el servidor.');
+                    alert('Error subiendo el archivo al servidor.');
                     btnText.innerText = originalText;
                 });
             }
@@ -220,7 +235,7 @@
             });
 
             document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
-            document.getElementById('nextBtnText').innerText = currentStep === totalSteps ? 'Crear Cuenta' : 'Continuar';
+            document.getElementById('nextBtnText').innerText = currentStep === totalSteps ? 'Finalizar Registro' : 'Continuar';
         }
 
         function validateCurrentStep() {
@@ -242,8 +257,13 @@
                 if (pass.length < 8) { alert('La contraseña debe tener 8 caracteres'); return false; }
             }
             if (currentStep === 3) {
+                const fileInput = document.getElementById('file-upload');
+                if(fileInput.files.length === 0) {
+                    alert('Debes subir la foto de tu documento de identidad (Cédula o Pasaporte).');
+                    return false;
+                }
                 if (!document.getElementById('legal-check').checked) {
-                    alert('Debes aceptar los términos.'); return false;
+                    alert('Debes aceptar los términos legales.'); return false;
                 }
             }
             return true;
