@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTicket | App Completa</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#F8FAFC',    
+                            text: '#1E293B',  
+                            gold: '#C9A227',  
+                            goldLight: '#FDF8E8',
+                            goldHover: '#B08D21',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.03)',
+                        'card': '0 2px 10px -2px rgba(0, 0, 0, 0.05)',
+                        'modal': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .transition-all-fast { transition: all 0.2s ease-in-out; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+        
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lotto-ball {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-weight: 600; font-size: 0.875rem;
+            background: white; border: 1px solid #E2E8F0; color: #1E293B;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .lotto-ball.powerball { background: #EF4444; color: white; border-color: #EF4444; }
+
+        /* Estilos interactivos para la selección de números */
+        .pick-ball {
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-weight: 500; font-size: 0.875rem;
+            background: white; border: 2px solid #E2E8F0; color: #64748B;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .pick-ball:hover { border-color: #C9A227; color: #C9A227; }
+        .pick-ball.selected { background: #1E293B; border-color: #1E293B; color: white; }
+        
+        .pick-powerball {
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-weight: 500; font-size: 0.875rem;
+            background: white; border: 2px solid #FECACA; color: #EF4444;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .pick-powerball:hover { border-color: #EF4444; background: #FEF2F2; }
+        .pick-powerball.selected { background: #EF4444; border-color: #EF4444; color: white; }
+    </style>
+</head>
+<body class="bg-brand-bg text-brand-text font-sans antialiased h-screen overflow-hidden flex">
+
+    <!-- MODALES (Ocultos por defecto) -->
+    
+    <!-- Modal: Escaneo de Boleto -->
+    <div id="modal-scan" class="fixed inset-0 bg-gray-900/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-modal">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-brand-text flex items-center"><i class="fa-solid fa-file-shield text-brand-gold mr-2"></i> <span data-i18n="modal_scan_title">Boleto Oficial Protegido</span></h3>
+                <button onclick="closeModal('modal-scan')" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 text-center bg-gray-100">
+                <!-- Imagen simulada de boleto -->
+                <div class="bg-white p-4 border border-gray-300 shadow-sm mx-auto w-full max-w-xs transform rotate-1">
+                    <div class="border-b-2 border-dashed border-gray-300 pb-2 mb-4">
+                        <h4 class="font-bold text-xl uppercase tracking-widest text-gray-800">POWERBALL</h4>
+                        <p class="text-xs text-gray-500">FLORIDA LOTTERY</p>
+                    </div>
+                    <div class="space-y-2 text-lg font-mono font-bold tracking-widest text-gray-700">
+                        <p>A. 04 12 23 45 58 <span class="text-red-500">PB10</span></p>
+                    </div>
+                    <div class="mt-6 pt-2 border-t border-gray-200 text-left">
+                        <p class="text-[10px] text-gray-400 font-mono">TICKET: 8849-201A-9938<br>DRAW: OCT 25 2023</p>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=SafeTicketDemo" alt="QR" class="mt-2 w-12 h-12 opacity-50">
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-100 text-center">
+                <p class="text-xs text-gray-500" data-i18n="modal_scan_desc">Este documento está bajo custodia física en nuestras bóvedas en Miami, FL.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Depositar Fondos -->
+    <div id="modal-deposit" class="fixed inset-0 bg-gray-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-modal">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-brand-text text-lg" data-i18n="modal_dep_title">Depositar Fondos</h3>
+                <button onclick="closeModal('modal-deposit')" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal_dep_amount">Monto a depositar (USD)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><span class="text-gray-500 font-bold">$</span></div>
+                        <input type="number" class="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-200 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold outline-none text-lg font-bold" placeholder="50.00">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="modal_dep_method">Método de Pago</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="border border-brand-gold bg-brand-goldLight/20 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer">
+                            <input type="radio" name="payment" class="hidden" checked>
+                            <i class="fa-brands fa-bitcoin text-2xl text-orange-500 mb-2"></i>
+                            <span class="text-sm font-semibold">Cripto (USDT)</span>
+                        </label>
+                        <label class="border border-gray-200 hover:border-brand-gold rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-colors">
+                            <input type="radio" name="payment" class="hidden">
+                            <i class="fa-solid fa-money-bill-transfer text-2xl text-purple-600 mb-2"></i>
+                            <span class="text-sm font-semibold">Zelle</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm text-gray-600">
+                    <p class="font-semibold mb-1" data-i18n="modal_dep_inst_title">Instrucciones:</p>
+                    <p data-i18n="modal_dep_inst_desc">Envía USDT (Red TRC20) a la siguiente dirección. Tu saldo se actualizará en 5 minutos.</p>
+                    <div class="mt-2 flex items-center bg-white border border-gray-200 p-2 rounded">
+                        <code class="text-xs flex-1 text-gray-800">TExV...9aB4q</code>
+                        <button class="text-brand-gold hover:text-brand-goldHover px-2"><i class="fa-regular fa-copy"></i></button>
+                    </div>
+                </div>
+                <button onclick="alert('Procesando depósito...'); closeModal('modal-deposit');" class="w-full bg-brand-text text-white py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors" data-i18n="btn_confirm_dep">Notificar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Retirar Fondos -->
+    <div id="modal-withdraw" class="fixed inset-0 bg-gray-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-modal">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-brand-text text-lg" data-i18n="modal_wit_title">Solicitar Retiro</h3>
+                <button onclick="closeModal('modal-withdraw')" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div class="flex justify-between items-center bg-brand-goldLight p-3 rounded-lg border border-brand-gold/30">
+                    <span class="text-sm text-brand-gold font-semibold" data-i18n="modal_wit_avail">Balance Disponible:</span>
+                    <span class="font-bold text-brand-text">$124.50</span>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal_dep_amount">Monto a retirar</label>
+                    <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-gold outline-none" placeholder="0.00">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal_wit_dest">Billetera Destino (USDT TRC20)</label>
+                    <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-gold outline-none text-sm" placeholder="Pega tu dirección de billetera aquí">
+                </div>
+                <button onclick="alert('Solicitud enviada. Revisión en 24h.'); closeModal('modal-withdraw');" class="w-full bg-brand-gold text-white py-3 rounded-lg font-bold hover:bg-brand-goldHover transition-colors" data-i18n="btn_confirm_wit">Solicitar Retiro</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Sidebar Lateral -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full shadow-soft z-20">
+        <div class="h-20 flex items-center px-6 border-b border-gray-50">
+            <i class="fa-solid fa-ticket text-brand-gold text-2xl mr-2"></i>
+            <span class="font-serif text-2xl font-bold tracking-tight text-brand-text">Safe<span class="text-brand-gold">Ticket</span></span>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+            <a href="#" onclick="switchView('view-dashboard')" data-target="view-dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 bg-brand-goldLight text-brand-gold rounded-xl font-medium transition-all-fast">
+                <i class="fa-solid fa-vault w-5 text-center"></i>
+                <span data-i18n="nav_dashboard">Mi Bóveda</span>
+            </a>
+            <a href="#" onclick="switchView('view-buy')" data-target="view-buy" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
+                <i class="fa-solid fa-cart-shopping w-5 text-center"></i>
+                <span data-i18n="nav_buy">Comprar Boletos</span>
+            </a>
+            <a href="#" onclick="switchView('view-scans')" data-target="view-scans" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
+                <i class="fa-solid fa-file-invoice w-5 text-center"></i>
+                <span data-i18n="nav_scans">Mis Escaneos</span>
+            </a>
+            <a href="#" onclick="switchView('view-wallet')" data-target="view-wallet" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
+                <i class="fa-solid fa-wallet w-5 text-center"></i>
+                <span data-i18n="nav_wallet">Billetera</span>
+            </a>
+            <a href="#" onclick="switchView('view-settings')" data-target="view-settings" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
+                <i class="fa-solid fa-gear w-5 text-center"></i>
+                <span data-i18n="nav_settings">Ajustes</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-50">
+            <button class="w-full flex items-center justify-center space-x-2 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 px-4 py-3 rounded-xl font-medium transition-all-fast">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span data-i18n="nav_logout">Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- Top Header -->
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10 sticky top-0">
+            <button onclick="toggleMobileMenu()" class="md:hidden text-gray-500 hover:text-brand-text"><i class="fa-solid fa-bars text-xl"></i></button>
+
+            <div class="hidden md:block">
+                <h2 class="text-xl font-serif font-bold text-brand-text"><span data-i18n="header_greeting">Hola,</span> Carlos <i class="fa-solid fa-hand-wave text-brand-gold ml-1"></i></h2>
+                <p class="text-xs text-gray-400 font-medium" data-i18n="header_date">Martes, 24 de Octubre</p>
+            </div>
+
+            <div class="flex items-center space-x-4 sm:space-x-6">
+                <!-- Selector de Idioma -->
+                <button onclick="toggleLanguage()" class="flex items-center space-x-1 text-gray-500 hover:text-brand-gold font-semibold transition-colors">
+                    <i class="fa-solid fa-globe text-brand-gold"></i> <span id="current-lang" class="text-sm">ES</span>
+                </button>
+                
+                <!-- Notificaciones con Dropdown -->
+                <div class="relative">
+                    <button id="btn-notifications" onclick="toggleNotifications(event)" class="relative text-gray-400 hover:text-brand-text transition-colors focus:outline-none">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-brand-gold"></span></span>
+                    </button>
+                    <!-- Menú de Notificaciones -->
+                    <div id="dropdown-notifications" class="hidden absolute right-0 mt-4 w-72 bg-white rounded-xl shadow-modal border border-gray-100 z-50 animate-fade-in overflow-hidden">
+                        <div class="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                            <h4 class="font-bold text-brand-text text-sm" data-i18n="notif_title">Notificaciones</h4>
+                            <span class="bg-brand-gold text-white text-[10px] font-bold px-2 py-0.5 rounded-full" data-i18n="notif_new">2 Nuevas</span>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto">
+                            <a href="#" class="block p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <p class="text-sm text-brand-text font-medium mb-1"><i class="fa-solid fa-file-shield text-brand-gold mr-1"></i> <span data-i18n="notif_item1_title">Boleto Escaneado</span></p>
+                                <p class="text-xs text-gray-500" data-i18n="notif_item1_desc">Tu boleto de Powerball ya está en la bóveda.</p>
+                                <p class="text-[10px] text-gray-400 mt-1" data-i18n="notif_time1">Hace 2 horas</p>
+                            </a>
+                            <a href="#" class="block p-4 hover:bg-gray-50 transition-colors">
+                                <p class="text-sm text-brand-text font-medium mb-1"><i class="fa-solid fa-coins text-green-500 mr-1"></i> <span data-i18n="notif_item2_title">Depósito Exitoso</span></p>
+                                <p class="text-xs text-gray-500" data-i18n="notif_item2_desc">Se han acreditado $50.00 a tu cuenta.</p>
+                                <p class="text-[10px] text-gray-400 mt-1" data-i18n="notif_time2">Ayer</p>
+                            </a>
+                        </div>
+                        <a href="#" class="block p-3 text-center text-xs font-semibold text-brand-gold hover:text-brand-goldHover bg-brand-goldLight/20 border-t border-gray-50 transition-colors" data-i18n="notif_view_all">Ver todas</a>
+                    </div>
+                </div>
+
+                <!-- Avatar Perfil con Dropdown -->
+                <div class="relative">
+                    <div id="btn-profile" onclick="toggleProfileMenu(event)" class="h-10 w-10 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow">
+                        <span class="font-bold text-brand-gold">CA</span>
+                    </div>
+                    <!-- Menú de Perfil -->
+                    <div id="dropdown-profile" class="hidden absolute right-0 mt-4 w-56 bg-white rounded-xl shadow-modal border border-gray-100 z-50 animate-fade-in overflow-hidden">
+                        <div class="p-4 border-b border-gray-50 bg-gray-50/50">
+                            <p class="font-bold text-brand-text text-sm">Carlos Alberto</p>
+                            <p class="text-xs text-gray-500 truncate">carlos@ejemplo.com</p>
+                        </div>
+                        <div class="py-2">
+                            <a href="#" onclick="switchView('view-settings'); closeDropdowns();" class="block px-4 py-2 text-sm text-gray-600 hover:text-brand-gold hover:bg-brand-goldLight/20 transition-colors"><i class="fa-solid fa-user-gear w-5 text-center mr-2"></i> <span data-i18n="menu_profile">Mi Perfil</span></a>
+                            <a href="#" onclick="switchView('view-wallet'); closeDropdowns();" class="block px-4 py-2 text-sm text-gray-600 hover:text-brand-gold hover:bg-brand-goldLight/20 transition-colors"><i class="fa-solid fa-wallet w-5 text-center mr-2"></i> <span data-i18n="nav_wallet">Billetera</span></a>
+                            <a href="#" onclick="switchView('view-support'); closeDropdowns();" class="block px-4 py-2 text-sm text-gray-600 hover:text-brand-gold hover:bg-brand-goldLight/20 transition-colors"><i class="fa-solid fa-circle-question w-5 text-center mr-2"></i> <span data-i18n="menu_help">Ayuda y Soporte</span></a>
+                        </div>
+                        <div class="border-t border-gray-50 py-2">
+                            <a href="#" onclick="alert('Cerrando sesión...'); closeDropdowns();" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"><i class="fa-solid fa-arrow-right-from-bracket w-5 text-center mr-2"></i> <span data-i18n="nav_logout">Cerrar Sesión</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Menu Movil Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-gray-900/50 z-40 hidden md:hidden" onclick="toggleMobileMenu()">
+            <aside class="w-64 bg-white h-full shadow-2xl flex flex-col transform transition-transform" onclick="event.stopPropagation()">
+                <div class="h-20 flex items-center px-6 border-b border-gray-50 justify-between">
+                    <div class="flex items-center"><i class="fa-solid fa-ticket text-brand-gold text-2xl mr-2"></i><span class="font-serif text-xl font-bold text-brand-text">SafeTicket</span></div>
+                    <button onclick="toggleMobileMenu()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <!-- Links moviles usan la misma clase nav-link -->
+                <nav class="flex-1 py-4 px-4 space-y-2">
+                    <a href="#" onclick="switchView('view-dashboard')" data-target="view-dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 bg-brand-goldLight text-brand-gold rounded-xl font-medium"><i class="fa-solid fa-vault w-5 text-center"></i><span data-i18n="nav_dashboard">Mi Bóveda</span></a>
+                    <a href="#" onclick="switchView('view-buy')" data-target="view-buy" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 rounded-xl font-medium"><i class="fa-solid fa-cart-shopping w-5 text-center"></i><span data-i18n="nav_buy">Comprar Boletos</span></a>
+                    <a href="#" onclick="switchView('view-scans')" data-target="view-scans" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 rounded-xl font-medium"><i class="fa-solid fa-file-invoice w-5 text-center"></i><span data-i18n="nav_scans">Mis Escaneos</span></a>
+                    <a href="#" onclick="switchView('view-wallet')" data-target="view-wallet" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 rounded-xl font-medium"><i class="fa-solid fa-wallet w-5 text-center"></i><span data-i18n="nav_wallet">Billetera</span></a>
+                    <a href="#" onclick="switchView('view-settings')" data-target="view-settings" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 rounded-xl font-medium"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="nav_settings">Ajustes</span></a>
+                </nav>
+            </aside>
+        </div>
+
+        <!-- AREA DE VISTAS (SPA) -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+            
+            <!-- VISTA 1: MI BÓVEDA (Dashboard Principal) -->
+            <div id="view-dashboard" class="view-section max-w-6xl mx-auto space-y-8 animate-fade-in">
+                <!-- Finanzas -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-card border border-gray-100 flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute -right-6 -top-6 text-brand-goldLight/50 text-9xl z-0"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="relative z-10 flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-1" data-i18n="dash_balance_title">Balance Disponible</p>
+                                <h3 class="text-4xl font-bold text-brand-text">$124.50</h3>
+                            </div>
+                            <div class="bg-brand-bg p-2 rounded-lg text-brand-gold"><i class="fa-solid fa-coins text-xl"></i></div>
+                        </div>
+                        <div class="relative z-10 flex space-x-3">
+                            <button onclick="openModal('modal-deposit')" class="flex-1 bg-brand-text text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors" data-i18n="btn_deposit">Depositar</button>
+                            <button onclick="openModal('modal-withdraw')" class="flex-1 bg-white border border-gray-200 text-brand-text py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors" data-i18n="btn_withdraw">Retirar</button>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-brand-gold to-brand-goldHover rounded-2xl p-6 shadow-card text-white flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute -right-2 -bottom-4 text-white/10 text-9xl z-0"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="relative z-10">
+                            <p class="text-sm text-brand-goldLight font-medium uppercase tracking-wider mb-1" data-i18n="dash_winnings_title">Premios Acumulados</p>
+                            <h3 class="text-4xl font-bold">$0.00</h3>
+                        </div>
+                        <div class="relative z-10 mt-4"><p class="text-sm text-brand-goldLight opacity-90" data-i18n="dash_winnings_desc">Sigue jugando, el próximo ganador podrías ser tú.</p></div>
+                    </div>
+                </div>
+
+                <!-- Boletos Activos -->
+                <div>
+                    <h3 class="text-xl font-serif font-bold text-brand-text mb-4" data-i18n="section_vault">Boletos Activos</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Boleto Powerball -->
+                        <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-card transition-shadow">
+                            <div class="flex justify-between items-start border-b border-gray-50 pb-4 mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600"><i class="fa-solid fa-star"></i></div>
+                                    <div><h4 class="font-bold text-brand-text text-lg">Powerball</h4><p class="text-xs text-gray-500 font-medium">Sorteo: 25 Oct, 2023</p></div>
+                                </div>
+                                <span class="px-2.5 py-1 bg-green-50 text-green-600 text-xs font-bold rounded-md uppercase tracking-wide border border-green-100">En Custodia</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <div class="lotto-ball">04</div><div class="lotto-ball">12</div><div class="lotto-ball">23</div><div class="lotto-ball">45</div><div class="lotto-ball">58</div><div class="lotto-ball powerball">10</div>
+                            </div>
+                            <div class="flex justify-between items-center mt-auto border-t border-gray-50 pt-3">
+                                <p class="text-xs text-gray-400 font-mono">#PB-8849201A</p>
+                                <!-- ACCIÓN: Ver Escaneo -->
+                                <button onclick="openModal('modal-scan')" class="text-sm bg-gray-50 px-3 py-1.5 rounded text-brand-gold hover:bg-gray-100 font-semibold flex items-center transition-colors">
+                                    <i class="fa-regular fa-eye mr-1.5"></i> <span data-i18n="btn_view_scan">Ver Escaneo</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Próximos Sorteos -->
+                <div>
+                    <h3 class="text-xl font-serif font-bold text-brand-text mb-4" data-i18n="section_upcoming">Próximos Grandes Sorteos</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div onclick="switchView('view-play')" class="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between hover:border-brand-gold transition-colors cursor-pointer group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-green-600 text-xl"><i class="fa-solid fa-clover"></i></div>
+                                <div><h5 class="font-bold text-sm text-brand-text">Florida Lotto</h5><p class="font-bold text-lg text-brand-gold">$14.5M</p></div>
+                            </div>
+                            <div class="text-gray-300 group-hover:text-brand-gold"><i class="fa-solid fa-chevron-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VISTA 2: COMPRAR BOLETOS (Vitrina) -->
+            <div id="view-buy" class="view-section hidden max-w-6xl mx-auto space-y-8 animate-fade-in">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_buy_title">Comprar Boletos</h3>
+                    <p class="text-gray-500 mb-6" data-i18n="view_buy_desc">Selecciona tu lotería favorita y juega ahora.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Powerball Card -->
+                        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-card transition-shadow flex flex-col">
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xl"><i class="fa-solid fa-star"></i></div>
+                                <span class="bg-red-50 text-red-600 text-xs font-bold px-3 py-1 rounded-full border border-red-100">$420 Millones</span>
+                            </div>
+                            <h4 class="font-bold text-brand-text text-xl mb-1">Powerball</h4>
+                            <p class="text-sm text-gray-400 mb-6 flex-1">Cierre en: 04:12:35</p>
+                            <!-- ACCIÓN: Seleccionar Números redirige a la vista de juego -->
+                            <button onclick="switchView('view-play')" class="w-full bg-brand-text text-white py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors" data-i18n="btn_select_numbers">Seleccionar Números</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 2.1: INTERFAZ DE JUEGO (Selección de Números) -->
+            <div id="view-play" class="view-section hidden max-w-4xl mx-auto space-y-6 animate-fade-in">
+                <!-- Botón de regreso -->
+                <button onclick="switchView('view-buy')" class="text-gray-500 hover:text-brand-gold text-sm font-medium flex items-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> <span data-i18n="btn_back">Volver a Loterías</span>
+                </button>
+                
+                <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+                    <!-- Header del Juego -->
+                    <div class="bg-gradient-to-r from-red-600 to-red-500 p-6 flex justify-between items-center text-white">
+                        <div>
+                            <h3 class="text-2xl font-bold tracking-wider">POWERBALL</h3>
+                            <p class="text-sm opacity-90">Precio por línea: $5.00</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs font-bold uppercase tracking-widest opacity-80" data-i18n="jackpot_label">PREMIO MAYOR</p>
+                            <p class="text-3xl font-bold">$420M</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tablero -->
+                    <div class="p-6 md:p-8 space-y-8">
+                        <div class="flex justify-between items-end border-b border-gray-100 pb-4">
+                            <div>
+                                <h4 class="font-bold text-brand-text" data-i18n="play_step1">1. Elige 5 números</h4>
+                                <p class="text-xs text-gray-500">O presiona Selección Rápida</p>
+                            </div>
+                            <!-- ACCIÓN: Auto-generar números -->
+                            <button onclick="quickPick()" class="bg-brand-goldLight text-brand-gold px-4 py-2 rounded font-semibold text-sm hover:bg-brand-gold hover:text-white transition-colors">
+                                <i class="fa-solid fa-bolt mr-1"></i> <span data-i18n="btn_quick">Selección Rápida</span>
+                            </button>
+                        </div>
+
+                        <!-- Grilla de Números (Renderizada por JS) -->
+                        <div id="number-grid" class="grid grid-cols-7 sm:grid-cols-10 gap-3 justify-items-center">
+                            <!-- JS llena esto -->
+                        </div>
+
+                        <div class="border-b border-gray-100 pb-4 pt-4">
+                            <h4 class="font-bold text-red-500" data-i18n="play_step2">2. Elige 1 Powerball</h4>
+                        </div>
+                        
+                        <!-- Grilla Powerball (Renderizada por JS) -->
+                        <div id="powerball-grid" class="grid grid-cols-7 sm:grid-cols-10 gap-3 justify-items-center">
+                            <!-- JS llena esto -->
+                        </div>
+
+                        <!-- Resumen y Compra -->
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col sm:flex-row justify-between items-center mt-8">
+                            <div class="mb-4 sm:mb-0 text-center sm:text-left">
+                                <p class="text-sm font-medium text-gray-500" data-i18n="play_summary">Tu selección:</p>
+                                <div id="selection-display" class="flex gap-2 mt-2 min-h-[40px]">
+                                    <span class="text-gray-400 text-sm italic">Selecciona números para continuar...</span>
+                                </div>
+                            </div>
+                            <button id="btn-checkout" onclick="alert('Redirigiendo a pasarela de pago...'); switchView('view-dashboard');" class="bg-gray-300 text-gray-500 cursor-not-allowed px-8 py-3 rounded-lg font-bold transition-all w-full sm:w-auto" disabled>
+                                <span data-i18n="btn_buy_ticket">Pagar Boleto ($5.00)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 3: MIS ESCANEOS (Galería) -->
+            <div id="view-scans" class="view-section hidden max-w-6xl mx-auto space-y-8 animate-fade-in">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_scans_title">Mis Escaneos</h3>
+                    <p class="text-gray-500 mb-6" data-i18n="view_scans_desc">Visualiza tus boletos físicos en custodia.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        <!-- Card Escaneo -->
+                        <div onclick="openModal('modal-scan')" class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:border-brand-gold cursor-pointer transition-colors text-center group">
+                            <div class="bg-gray-100 h-32 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
+                                <i class="fa-solid fa-receipt text-4xl text-gray-300 group-hover:scale-110 transition-transform"></i>
+                                <div class="absolute inset-0 bg-brand-gold/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span class="bg-white text-brand-gold text-xs font-bold px-3 py-1 rounded-full shadow">Ver Imagen HD</span>
+                                </div>
+                            </div>
+                            <h5 class="font-bold text-brand-text">Powerball</h5>
+                            <p class="text-xs text-gray-500">Oct 25, 2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 4: BILLETERA -->
+            <div id="view-wallet" class="view-section hidden max-w-6xl mx-auto space-y-8 animate-fade-in">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_wallet_title">Mi Billetera</h3>
+                    <div class="bg-white border border-gray-100 rounded-xl p-8 shadow-sm max-w-2xl">
+                        <p class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">Balance Actual</p>
+                        <h3 class="text-4xl font-bold text-brand-text mb-8">$124.50</h3>
+                        <div class="flex flex-col sm:flex-row gap-4 border-t border-gray-50 pt-8">
+                            <!-- ACCIÓN: Abrir modales correspondientes -->
+                            <button onclick="openModal('modal-deposit')" class="flex-1 bg-brand-text text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors flex justify-center items-center">
+                                <i class="fa-solid fa-plus mr-2 text-brand-gold"></i> Depositar
+                            </button>
+                            <button onclick="openModal('modal-withdraw')" class="flex-1 bg-white text-brand-text border border-gray-200 px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors flex justify-center items-center">
+                                <i class="fa-solid fa-arrow-right-arrow-left mr-2 text-gray-400"></i> Retirar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 5: AJUSTES -->
+            <div id="view-settings" class="view-section hidden max-w-6xl mx-auto space-y-8 animate-fade-in">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_settings_title">Ajustes de Cuenta</h3>
+                    <div class="bg-white border border-gray-100 rounded-xl p-8 shadow-sm max-w-2xl">
+                        <div class="flex items-center space-x-6 mb-8 pb-8 border-b border-gray-50">
+                            <div class="h-20 w-20 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center"><span class="font-bold text-brand-gold text-2xl">CA</span></div>
+                            <div>
+                                <h4 class="font-bold text-brand-text text-xl">Carlos Alberto</h4>
+                                <p class="text-gray-400 mb-2">carlos@ejemplo.com</p>
+                                <span class="px-3 py-1 bg-green-50 text-green-600 text-xs font-bold rounded-md uppercase tracking-wide border border-green-100 inline-flex items-center"><i class="fa-solid fa-shield-check mr-1.5"></i> KYC Completado</span>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <button class="w-full text-left px-4 py-3 rounded-lg border border-gray-200 hover:border-brand-gold text-brand-text font-medium flex justify-between items-center transition-colors">
+                                <span><i class="fa-solid fa-lock text-gray-400 w-6"></i> Cambiar Contraseña</span><i class="fa-solid fa-chevron-right text-gray-300"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VISTA 6: AYUDA Y SOPORTE -->
+            <div id="view-support" class="view-section hidden max-w-4xl mx-auto space-y-8 animate-fade-in">
+                <!-- Header Soporte -->
+                <div>
+                    <h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_support_title">Ayuda y Soporte</h3>
+                    <p class="text-gray-500 mb-6" data-i18n="view_support_desc">Resuelve tus dudas o contacta a nuestro equipo de atención al cliente.</p>
+                </div>
+
+                <!-- Banner de WhatsApp -->
+                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 shadow-sm text-white flex flex-col md:flex-row items-center justify-between">
+                    <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                        <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-3xl">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg" data-i18n="support_wa_title">¿Necesitas ayuda personalizada?</h4>
+                            <p class="text-sm text-green-50" data-i18n="support_wa_desc">Chatea con uno de nuestros agentes en vivo.</p>
+                        </div>
+                    </div>
+                    <!-- Botón de Contacto (con alerta en construcción) -->
+                    <button onclick="alert('La integración con WhatsApp estará disponible muy pronto.')" class="w-full md:w-auto bg-white text-green-600 px-6 py-3 rounded-lg font-bold shadow-sm hover:bg-green-50 transition-colors flex justify-center items-center">
+                        <i class="fa-brands fa-whatsapp mr-2 text-xl"></i> <span data-i18n="btn_contact_agent">Contactar Agente</span>
+                    </button>
+                </div>
+
+                <!-- Preguntas Frecuentes (FAQ) -->
+                <div>
+                    <h4 class="text-xl font-bold text-brand-text mb-4" data-i18n="support_faq_title">Preguntas Frecuentes (FAQ)</h4>
+                    <div class="space-y-4">
+                        <!-- FAQ 1 -->
+                        <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
+                            <h5 class="font-bold text-brand-text mb-2 text-lg flex items-start">
+                                <i class="fa-solid fa-circle-question text-brand-gold mt-1 mr-3"></i> 
+                                <span data-i18n="faq_1_q">¿Cómo sé que mi boleto es real?</span>
+                            </h5>
+                            <p class="text-gray-600 text-sm leading-relaxed ml-7" data-i18n="faq_1_a">Nuestros agentes compran el boleto físico en un establecimiento autorizado en EE. UU., lo escanean en alta resolución y lo suben a tu Bóveda. El boleto original se guarda en una caja fuerte física para total seguridad.</p>
+                        </div>
+                        <!-- FAQ 2 -->
+                        <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
+                            <h5 class="font-bold text-brand-text mb-2 text-lg flex items-start">
+                                <i class="fa-solid fa-circle-question text-brand-gold mt-1 mr-3"></i> 
+                                <span data-i18n="faq_2_q">¿Cómo reclamo mi premio si gano?</span>
+                            </h5>
+                            <p class="text-gray-600 text-sm leading-relaxed ml-7" data-i18n="faq_2_a">Los premios menores a $600 se acreditan automáticamente a tu billetera en la plataforma. Para premios mayores (Jackpots), nuestro equipo legal te asesorará en todo el proceso de cobro, e incluso coordinará tu viaje a EE. UU. si necesitas reclamarlo en persona.</p>
+                        </div>
+                        <!-- FAQ 3 -->
+                        <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
+                            <h5 class="font-bold text-brand-text mb-2 text-lg flex items-start">
+                                <i class="fa-solid fa-circle-question text-brand-gold mt-1 mr-3"></i> 
+                                <span data-i18n="faq_3_q">¿Cuáles son los métodos de pago aceptados?</span>
+                            </h5>
+                            <p class="text-gray-600 text-sm leading-relaxed ml-7" data-i18n="faq_3_a">Actualmente aceptamos transferencias en Criptomonedas (USDT por la red TRC20) y transferencias a través de Zelle para garantizar rapidez y seguridad en todas tus transacciones.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-12"></div>
+        </main>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- Diccionario de Traducciones ---
+        const translations = {
+            es: {
+                nav_dashboard: "Mi Bóveda", nav_buy: "Comprar Boletos", nav_scans: "Mis Escaneos", nav_wallet: "Billetera", nav_settings: "Ajustes", nav_logout: "Cerrar Sesión",
+                header_greeting: "Hola,", header_date: "Martes, 24 de Octubre",
+                dash_balance_title: "Balance Disponible", btn_deposit: "Depositar", btn_withdraw: "Retirar",
+                dash_winnings_title: "Premios Acumulados", dash_winnings_desc: "Sigue jugando, el próximo ganador podrías ser tú.",
+                section_vault: "Boletos Activos", section_upcoming: "Próximos Grandes Sorteos",
+                btn_view_scan: "Ver Escaneo", view_buy_title: "Comprar Boletos", view_buy_desc: "Selecciona tu lotería favorita y juega ahora.",
+                btn_select_numbers: "Seleccionar Números", btn_back: "Volver a Loterías", jackpot_label: "PREMIO MAYOR",
+                play_step1: "1. Elige 5 números", btn_quick: "Selección Rápida", play_step2: "2. Elige 1 Powerball",
+                play_summary: "Tu selección:", btn_buy_ticket: "Pagar Boleto ($5.00)",
+                view_scans_title: "Mis Escaneos", view_scans_desc: "Visualiza tus boletos físicos en custodia.",
+                view_wallet_title: "Mi Billetera", view_settings_title: "Ajustes de Cuenta",
+                modal_scan_title: "Boleto Oficial Protegido", modal_scan_desc: "Este documento está bajo custodia física en nuestras bóvedas.",
+                modal_dep_title: "Depositar Fondos", modal_dep_amount: "Monto", modal_dep_method: "Método de Pago",
+                modal_dep_inst_title: "Instrucciones:", modal_dep_inst_desc: "Envía a la siguiente dirección.", btn_confirm_dep: "Notificar Pago",
+                modal_wit_title: "Solicitar Retiro", modal_wit_avail: "Balance Disponible:", modal_wit_dest: "Billetera Destino", btn_confirm_wit: "Solicitar",
+                // Nuevas traducciones para dropdowns
+                notif_title: "Notificaciones", notif_new: "2 Nuevas", notif_view_all: "Ver todas",
+                notif_item1_title: "Boleto Escaneado", notif_item1_desc: "Tu boleto de Powerball ya está en la bóveda.", notif_time1: "Hace 2 horas",
+                notif_item2_title: "Depósito Exitoso", notif_item2_desc: "Se han acreditado $50.00 a tu cuenta.", notif_time2: "Ayer",
+                menu_profile: "Mi Perfil", menu_help: "Ayuda y Soporte",
+                // Nuevas traducciones Soporte
+                view_support_title: "Ayuda y Soporte", view_support_desc: "Resuelve tus dudas o contacta a nuestro equipo de atención al cliente.",
+                support_wa_title: "¿Necesitas ayuda personalizada?", support_wa_desc: "Chatea con uno de nuestros agentes en vivo.",
+                btn_contact_agent: "Contactar Agente", support_faq_title: "Preguntas Frecuentes (FAQ)",
+                faq_1_q: "¿Cómo sé que mi boleto es real?",
+                faq_1_a: "Nuestros agentes compran el boleto físico en un establecimiento autorizado en EE. UU., lo escanean en alta resolución y lo suben a tu Bóveda. El boleto original se guarda en una caja fuerte física para total seguridad.",
+                faq_2_q: "¿Cómo reclamo mi premio si gano?",
+                faq_2_a: "Los premios menores a $600 se acreditan automáticamente a tu billetera en la plataforma. Para premios mayores (Jackpots), nuestro equipo legal te asesorará en todo el proceso de cobro, e incluso coordinará tu viaje a EE. UU. si necesitas reclamarlo en persona.",
+                faq_3_q: "¿Cuáles son los métodos de pago aceptados?",
+                faq_3_a: "Actualmente aceptamos transferencias en Criptomonedas (USDT por la red TRC20) y transferencias a través de Zelle para garantizar rapidez y seguridad en todas tus transacciones."
+            },
+            en: {
+                nav_dashboard: "My Vault", nav_buy: "Buy Tickets", nav_scans: "My Scans", nav_wallet: "Wallet", nav_settings: "Settings", nav_logout: "Log Out",
+                header_greeting: "Hello,", header_date: "Tuesday, October 24th",
+                dash_balance_title: "Available Balance", btn_deposit: "Deposit", btn_withdraw: "Withdraw",
+                dash_winnings_title: "Accumulated Winnings", dash_winnings_desc: "Keep playing, the next winner could be you.",
+                section_vault: "Active Tickets", section_upcoming: "Upcoming Big Draws",
+                btn_view_scan: "View Scan", view_buy_title: "Buy Tickets", view_buy_desc: "Select your favorite lottery and play now.",
+                btn_select_numbers: "Select Numbers", btn_back: "Back to Lotteries", jackpot_label: "JACKPOT",
+                play_step1: "1. Pick 5 numbers", btn_quick: "Quick Pick", play_step2: "2. Pick 1 Powerball",
+                play_summary: "Your selection:", btn_buy_ticket: "Pay Ticket ($5.00)",
+                view_scans_title: "My Scans", view_scans_desc: "View your physical tickets in custody.",
+                view_wallet_title: "My Wallet", view_settings_title: "Account Settings",
+                modal_scan_title: "Protected Official Ticket", modal_scan_desc: "This document is under physical custody in our vaults.",
+                modal_dep_title: "Deposit Funds", modal_dep_amount: "Amount", modal_dep_method: "Payment Method",
+                modal_dep_inst_title: "Instructions:", modal_dep_inst_desc: "Send to the following address.", btn_confirm_dep: "Notify Payment",
+                modal_wit_title: "Request Withdrawal", modal_wit_avail: "Available Balance:", modal_wit_dest: "Destination Wallet", btn_confirm_wit: "Request",
+                // Nuevas traducciones para dropdowns
+                notif_title: "Notifications", notif_new: "2 New", notif_view_all: "View all",
+                notif_item1_title: "Ticket Scanned", notif_item1_desc: "Your Powerball ticket is now in the vault.", notif_time1: "2 hours ago",
+                notif_item2_title: "Successful Deposit", notif_item2_desc: "$50.00 has been credited to your account.", notif_time2: "Yesterday",
+                menu_profile: "My Profile", menu_help: "Help & Support",
+                // Nuevas traducciones Soporte
+                view_support_title: "Help & Support", view_support_desc: "Resolve your doubts or contact our customer support team.",
+                support_wa_title: "Need personalized help?", support_wa_desc: "Chat with one of our live agents.",
+                btn_contact_agent: "Contact Agent", support_faq_title: "Frequently Asked Questions (FAQ)",
+                faq_1_q: "How do I know my ticket is real?",
+                faq_1_a: "Our agents purchase the physical ticket at an authorized retailer in the US, scan it in high resolution, and upload it to your Vault. The original ticket is kept in a physical safe for total security.",
+                faq_2_q: "How do I claim my prize if I win?",
+                faq_2_a: "Prizes under $600 are automatically credited to your platform wallet. For larger prizes (Jackpots), our legal team will advise you throughout the claim process, and even coordinate your travel to the US if you need to claim it in person.",
+                faq_3_q: "What are the accepted payment methods?",
+                faq_3_a: "We currently accept Cryptocurrency transfers (USDT via TRC20 network) and Zelle transfers to guarantee speed and security in all your transactions."
+            }
+        };
+
+        let currentLanguage = 'es';
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'es' ? 'en' : 'es';
+            document.getElementById('current-lang').innerText = currentLanguage.toUpperCase();
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLanguage][key]) el.innerText = translations[currentLanguage][key];
+            });
+            updateCheckoutBtn(); // Re-render boton pago si hay numeros seleccionados
+        }
+
+        // --- Navegación SPA ---
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-brand-goldLight', 'text-brand-gold');
+                link.classList.add('text-gray-500');
+                if (link.getAttribute('data-target') === viewId) {
+                    link.classList.remove('text-gray-500');
+                    link.classList.add('bg-brand-goldLight', 'text-brand-gold');
+                }
+            });
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (!mobileMenu.classList.contains('hidden')) toggleMobileMenu();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- Lógica de Dropdowns (Notificaciones y Perfil) ---
+        function toggleNotifications(event) {
+            event.stopPropagation(); // Evitar que el click cierre el menú inmediatamente
+            const dropNotif = document.getElementById('dropdown-notifications');
+            const dropProfile = document.getElementById('dropdown-profile');
+            
+            // Cerrar el de perfil si está abierto
+            if (!dropProfile.classList.contains('hidden')) {
+                dropProfile.classList.add('hidden');
+            }
+            dropNotif.classList.toggle('hidden');
+        }
+
+        function toggleProfileMenu(event) {
+            event.stopPropagation();
+            const dropProfile = document.getElementById('dropdown-profile');
+            const dropNotif = document.getElementById('dropdown-notifications');
+            
+            // Cerrar el de notificaciones si está abierto
+            if (!dropNotif.classList.contains('hidden')) {
+                dropNotif.classList.add('hidden');
+            }
+            dropProfile.classList.toggle('hidden');
+        }
+
+        function closeDropdowns() {
+            document.getElementById('dropdown-notifications').classList.add('hidden');
+            document.getElementById('dropdown-profile').classList.add('hidden');
+        }
+
+        // Cerrar dropdowns si se hace clic fuera de ellos
+        document.addEventListener('click', function(event) {
+            const dropNotif = document.getElementById('dropdown-notifications');
+            const dropProfile = document.getElementById('dropdown-profile');
+            const btnNotif = document.getElementById('btn-notifications');
+            const btnProfile = document.getElementById('btn-profile');
+
+            if (dropNotif && !dropNotif.classList.contains('hidden') && !dropNotif.contains(event.target) && !btnNotif.contains(event.target)) {
+                dropNotif.classList.add('hidden');
+            }
+            if (dropProfile && !dropProfile.classList.contains('hidden') && !dropProfile.contains(event.target) && !btnProfile.contains(event.target)) {
+                dropProfile.classList.add('hidden');
+            }
+        });
+
+        // --- Modales ---
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // --- Lógica del Juego (Powerball) ---
+        let selectedNumbers = [];
+        let selectedPowerball = null;
+
+        function initGrid() {
+            const numGrid = document.getElementById('number-grid');
+            const pbGrid = document.getElementById('powerball-grid');
+            numGrid.innerHTML = ''; pbGrid.innerHTML = '';
+
+            // Generar bolas principales (1 al 69)
+            for (let i = 1; i <= 69; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'pick-ball';
+                btn.innerText = i;
+                btn.onclick = () => toggleNumber(i, btn);
+                numGrid.appendChild(btn);
+            }
+            // Generar Powerballs (1 al 26)
+            for (let i = 1; i <= 26; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'pick-powerball';
+                btn.innerText = i;
+                btn.onclick = () => selectPowerball(i, btn);
+                pbGrid.appendChild(btn);
+            }
+        }
+
+        function toggleNumber(num, el) {
+            if (selectedNumbers.includes(num)) {
+                selectedNumbers = selectedNumbers.filter(n => n !== num);
+                el.classList.remove('selected');
+            } else if (selectedNumbers.length < 5) {
+                selectedNumbers.push(num);
+                el.classList.add('selected');
+            }
+            updateSelectionDisplay();
+        }
+
+        function selectPowerball(num, el) {
+            document.querySelectorAll('.pick-powerball').forEach(b => b.classList.remove('selected'));
+            selectedPowerball = num;
+            el.classList.add('selected');
+            updateSelectionDisplay();
+        }
+
+        function quickPick() {
+            // Limpiar
+            selectedNumbers = []; selectedPowerball = null;
+            document.querySelectorAll('.pick-ball, .pick-powerball').forEach(b => b.classList.remove('selected'));
+            
+            // Random 5 nums
+            while(selectedNumbers.length < 5) {
+                let r = Math.floor(Math.random() * 69) + 1;
+                if(!selectedNumbers.includes(r)) {
+                    selectedNumbers.push(r);
+                    document.querySelectorAll('.pick-ball')[r-1].classList.add('selected');
+                }
+            }
+            // Random PB
+            selectedPowerball = Math.floor(Math.random() * 26) + 1;
+            document.querySelectorAll('.pick-powerball')[selectedPowerball-1].classList.add('selected');
+            
+            updateSelectionDisplay();
+        }
+
+        function updateSelectionDisplay() {
+            const display = document.getElementById('selection-display');
+            const btnCheckout = document.getElementById('btn-checkout');
+            
+            if (selectedNumbers.length === 0 && !selectedPowerball) {
+                display.innerHTML = `<span class="text-gray-400 text-sm italic">${currentLanguage === 'es' ? 'Selecciona números...' : 'Select numbers...'}</span>`;
+            } else {
+                display.innerHTML = '';
+                selectedNumbers.sort((a,b)=>a-b).forEach(n => {
+                    display.innerHTML += `<div class="lotto-ball !w-8 !h-8 !text-xs">${n}</div>`;
+                });
+                if (selectedPowerball) {
+                    display.innerHTML += `<div class="lotto-ball powerball !w-8 !h-8 !text-xs">${selectedPowerball}</div>`;
+                }
+            }
+
+            // Habilitar boton de pago solo si esta completo (5 num + 1 PB)
+            if (selectedNumbers.length === 5 && selectedPowerball) {
+                btnCheckout.disabled = false;
+                btnCheckout.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                btnCheckout.classList.add('bg-brand-text', 'text-white', 'hover:bg-gray-800');
+            } else {
+                btnCheckout.disabled = true;
+                btnCheckout.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                btnCheckout.classList.remove('bg-brand-text', 'text-white', 'hover:bg-gray-800');
+            }
+        }
+
+        function updateCheckoutBtn() {
+            // Refresca el texto del boton al cambiar idioma
+            document.getElementById('btn-checkout').querySelector('span').innerText = translations[currentLanguage]['btn_buy_ticket'];
+            updateSelectionDisplay();
+        }
+
+        // Iniciar tableros
+        initGrid();
+    </script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTicket | Registro Seguro</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#F8FAFC',    
+                            text: '#1E293B',  
+                            gold: '#C9A227',  
+                            goldLight: '#FDF8E8',
+                            goldHover: '#B08D21',
+                            gray: '#64748B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .step-transition { transition: all 0.4s ease-in-out; }
+        .input-elegant {
+            transition: all 0.2s;
+            border: 1px solid #E2E8F0;
+        }
+        .input-elegant:focus {
+            border-color: #C9A227;
+            ring: 2px solid #C9A227;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1);
+        }
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        .drag-active {
+            border-color: #C9A227 !important;
+            background-color: #FDF8E8 !important;
+        }
+    </style>
+</head>
+<body class="bg-brand-bg text-brand-text min-h-screen flex flex-col items-center justify-center py-10 px-4">
+
+    <!-- Language Toggle (Absolute Top Right) -->
+    <div class="absolute top-6 right-6 z-50">
+        <button onclick="toggleLanguage()" class="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 hover:border-brand-gold transition group">
+            <i class="fa-solid fa-globe text-brand-gold"></i>
+            <span id="lang-display" class="text-sm font-semibold text-gray-600 group-hover:text-brand-gold">ES</span>
+        </button>
+    </div>
+
+    <!-- Main Card -->
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-soft overflow-hidden relative">
+        
+        <!-- Header -->
+        <div class="bg-white p-8 border-b border-gray-50 text-center">
+            <div class="flex justify-center items-center mb-2">
+                <i class="fa-solid fa-ticket text-brand-gold text-2xl mr-2"></i>
+                <span class="font-serif text-2xl font-bold text-brand-text">Safe<span class="text-brand-gold">Ticket</span></span>
+            </div>
+            <p class="text-sm text-gray-400" data-i18n="header_subtitle">Crea tu cuenta de custodia segura</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="px-12 py-6 bg-gray-50/50">
+            <div class="relative flex items-center justify-between w-full">
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-0"></div>
+                <div id="progress-line" class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-brand-gold transition-all duration-500 -z-0" style="width: 0%"></div>
+                
+                <!-- Steps Indicators -->
+                <div class="relative z-10 flex flex-col items-center step-indicator active" data-step="1">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 bg-brand-gold text-white shadow-lg ring-4 ring-white">1</div>
+                    <span class="text-xs font-medium mt-2 text-brand-gold" data-i18n="step_1_label">Datos</span>
+                </div>
+                <div class="relative z-10 flex flex-col items-center step-indicator" data-step="2">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 bg-gray-200 text-gray-500 ring-4 ring-white">2</div>
+                    <span class="text-xs font-medium mt-2 text-gray-400" data-i18n="step_2_label">Seguridad</span>
+                </div>
+                <div class="relative z-10 flex flex-col items-center step-indicator" data-step="3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 bg-gray-200 text-gray-500 ring-4 ring-white">3</div>
+                    <span class="text-xs font-medium mt-2 text-gray-400" data-i18n="step_3_label">Verificación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <form id="registrationForm" class="p-8 md:p-12 relative min-h-[400px]" onsubmit="return false;">
+            
+            <!-- STEP 1: Personal Info -->
+            <div id="step-1" class="step-content space-y-6 animate-fade-in">
+                <h3 class="text-xl font-serif font-semibold text-brand-text mb-6" data-i18n="personal_info_title">Información Personal</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_name">Nombre</label>
+                        <input type="text" id="firstName" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="Juan">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_surname">Apellido</label>
+                        <input type="text" id="lastName" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="Pérez">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_dob">Fecha de Nacimiento</label>
+                    <input type="date" id="dob" onchange="validateAge()" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm text-gray-600">
+                    <p id="age-error" class="hidden text-red-500 text-xs mt-1">
+                        <i class="fa-solid fa-circle-exclamation mr-1"></i> <span data-i18n="error_age">Debes ser mayor de 18 años para registrarte.</span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_phone">Teléfono Móvil</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-mobile-screen text-gray-400"></i>
+                        </div>
+                        <input type="tel" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="+1 (555) 000-0000">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Account Security -->
+            <div id="step-2" class="step-content hidden space-y-6">
+                <h3 class="text-xl font-serif font-semibold text-brand-text mb-6" data-i18n="security_title">Configura tu Acceso</h3>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_email">Correo Electrónico</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="email" onkeyup="validateEmail()" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="juan@ejemplo.com">
+                        <div id="email-check" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-green-500">
+                            <i class="fa-solid fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_password">Contraseña Maestra</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" onkeyup="checkPasswordStrength()" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="••••••••">
+                    </div>
+                    
+                    <!-- Password Strength Meter -->
+                    <div class="mt-2 grid grid-cols-4 gap-1 h-1.5 w-full">
+                        <div id="strength-1" class="bg-gray-200 rounded-full transition-colors duration-300"></div>
+                        <div id="strength-2" class="bg-gray-200 rounded-full transition-colors duration-300"></div>
+                        <div id="strength-3" class="bg-gray-200 rounded-full transition-colors duration-300"></div>
+                        <div id="strength-4" class="bg-gray-200 rounded-full transition-colors duration-300"></div>
+                    </div>
+                    <p id="password-feedback" class="text-xs text-gray-400 mt-1" data-i18n="password_hint">Mínimo 8 caracteres, números y símbolos.</p>
+                </div>
+            </div>
+
+            <!-- STEP 3: KYC & Legal -->
+            <div id="step-3" class="step-content hidden space-y-6">
+                <h3 class="text-xl font-serif font-semibold text-brand-text mb-6" data-i18n="kyc_title">Verificación de Identidad (KYC)</h3>
+                
+                <!-- Drag & Drop Area -->
+                <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center transition-all cursor-pointer hover:border-brand-gold hover:bg-brand-goldLight/20 group">
+                    <input type="file" id="file-upload" class="hidden" accept="image/*,.pdf">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white group-hover:shadow-md transition">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 group-hover:text-brand-gold"></i>
+                    </div>
+                    <p class="font-medium text-gray-700" data-i18n="upload_title">Arrastra tu ID o Pasaporte aquí</p>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="upload_subtitle">JPG, PNG o PDF (Máx. 5MB)</p>
+                    <p id="file-name" class="text-sm text-brand-gold font-bold mt-3 hidden"></p>
+                </div>
+
+                <!-- Legal Checkbox -->
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-100 mt-4">
+                    <label class="flex items-start space-x-3 cursor-pointer">
+                        <input type="checkbox" id="legal-check" class="mt-1 w-5 h-5 text-brand-gold border-gray-300 rounded focus:ring-brand-gold">
+                        <div class="text-sm text-gray-600">
+                            <span data-i18n="legal_accept">Acepto los</span> 
+                            <a href="#" class="text-brand-gold hover:underline font-semibold" data-i18n="legal_terms">Términos de Mandato de Compra y Custodia Digital</a>.
+                            <span data-i18n="legal_authorize">Autorizo a SafeTicket a gestionar boletos en mi nombre.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="mt-10 flex justify-between items-center">
+                <button type="button" id="prevBtn" onclick="prevStep()" class="hidden px-6 py-2.5 rounded-lg text-gray-500 font-medium hover:text-brand-text hover:bg-gray-100 transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> <span data-i18n="btn_back">Atrás</span>
+                </button>
+                
+                <button type="button" id="nextBtn" onclick="nextStep()" class="ml-auto px-8 py-3 bg-brand-gold text-white font-bold rounded-lg shadow-lg hover:bg-brand-goldHover transform hover:-translate-y-0.5 transition-all duration-200 flex items-center">
+                    <span id="nextBtnText" data-i18n="btn_continue">Continuar</span>
+                    <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let currentStep = 1;
+        let currentLang = 'es';
+        const totalSteps = 3;
+
+        // --- Internationalization (i18n) ---
+        const translations = {
+            es: {
+                header_subtitle: "Crea tu cuenta de custodia segura",
+                step_1_label: "Datos",
+                step_2_label: "Seguridad",
+                step_3_label: "Verificación",
+                personal_info_title: "Información Personal",
+                label_name: "Nombre",
+                label_surname: "Apellido",
+                label_dob: "Fecha de Nacimiento",
+                error_age: "Debes ser mayor de 18 años para registrarte.",
+                label_phone: "Teléfono Móvil",
+                security_title: "Configura tu Acceso",
+                label_email: "Correo Electrónico",
+                label_password: "Contraseña Maestra",
+                password_hint: "Mínimo 8 caracteres, números y símbolos.",
+                kyc_title: "Verificación de Identidad (KYC)",
+                upload_title: "Arrastra tu ID o Pasaporte aquí",
+                upload_subtitle: "JPG, PNG o PDF (Máx. 5MB)",
+                legal_accept: "Acepto los",
+                legal_terms: "Términos de Mandato de Compra y Custodia Digital",
+                legal_authorize: "Autorizo a SafeTicket a gestionar boletos en mi nombre.",
+                btn_back: "Atrás",
+                btn_continue: "Continuar",
+                btn_finish: "Crear Cuenta"
+            },
+            en: {
+                header_subtitle: "Create your secure custody account",
+                step_1_label: "Details",
+                step_2_label: "Security",
+                step_3_label: "Verification",
+                personal_info_title: "Personal Information",
+                label_name: "First Name",
+                label_surname: "Last Name",
+                label_dob: "Date of Birth",
+                error_age: "You must be 18+ years old to register.",
+                label_phone: "Mobile Phone",
+                security_title: "Setup Access",
+                label_email: "Email Address",
+                label_password: "Master Password",
+                password_hint: "Min 8 chars, numbers & symbols.",
+                kyc_title: "Identity Verification (KYC)",
+                upload_title: "Drag & Drop ID or Passport here",
+                upload_subtitle: "JPG, PNG or PDF (Max 5MB)",
+                legal_accept: "I accept the",
+                legal_terms: "Mandate of Purchase & Digital Custody Terms",
+                legal_authorize: "I authorize SafeTicket to manage tickets on my behalf.",
+                btn_back: "Back",
+                btn_continue: "Continue",
+                btn_finish: "Create Account"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            document.getElementById('lang-display').innerText = currentLang.toUpperCase();
+            
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+            updateButtonText();
+        }
+
+        function updateButtonText() {
+            const btnText = document.getElementById('nextBtnText');
+            if (currentStep === totalSteps) {
+                btnText.innerText = translations[currentLang]['btn_finish'];
+            } else {
+                btnText.innerText = translations[currentLang]['btn_continue'];
+            }
+        }
+
+        // --- Navigation Logic ---
+        function nextStep() {
+            // Validation Gate
+            if (!validateCurrentStep()) return;
+
+            if (currentStep < totalSteps) {
+                // Hide current
+                document.getElementById(`step-${currentStep}`).classList.add('hidden');
+                
+                currentStep++;
+                
+                // Show next
+                const nextStepEl = document.getElementById(`step-${currentStep}`);
+                nextStepEl.classList.remove('hidden');
+                nextStepEl.classList.add('fade-in');
+
+                updateUI();
+            } else {
+                // Submit Logic
+                alert(currentLang === 'es' ? '¡Registro completado exitosamente!' : 'Registration completed successfully!');
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step-${currentStep}`).classList.add('hidden');
+                currentStep--;
+                document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            // Update Progress Bar Line
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progress-line').style.width = `${progress}%`;
+
+            // Update Indicators
+            document.querySelectorAll('.step-indicator').forEach(el => {
+                const step = parseInt(el.getAttribute('data-step'));
+                const circle = el.querySelector('div');
+                const label = el.querySelector('span');
+
+                if (step <= currentStep) {
+                    circle.classList.remove('bg-gray-200', 'text-gray-500');
+                    circle.classList.add('bg-brand-gold', 'text-white', 'shadow-lg');
+                    label.classList.remove('text-gray-400');
+                    label.classList.add('text-brand-gold');
+                } else {
+                    circle.classList.remove('bg-brand-gold', 'text-white', 'shadow-lg');
+                    circle.classList.add('bg-gray-200', 'text-gray-500');
+                    label.classList.remove('text-brand-gold');
+                    label.classList.add('text-gray-400');
+                }
+            });
+
+            // Show/Hide Back Button
+            const prevBtn = document.getElementById('prevBtn');
+            if (currentStep === 1) prevBtn.classList.add('hidden');
+            else prevBtn.classList.remove('hidden');
+
+            updateButtonText();
+        }
+
+        // --- Validation Logic ---
+        function validateAge() {
+            const dob = document.getElementById('dob').value;
+            const errorEl = document.getElementById('age-error');
+            const dobInput = document.getElementById('dob');
+
+            if (dob && !isOver18(dob)) {
+                errorEl.classList.remove('hidden');
+                dobInput.classList.add('ring-2', 'ring-red-400', 'border-red-400');
+            } else {
+                errorEl.classList.add('hidden');
+                dobInput.classList.remove('ring-2', 'ring-red-400', 'border-red-400');
+            }
+        }
+
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const dob = document.getElementById('dob').value;
+                const name = document.getElementById('firstName').value;
+                if(!name) { highlightError('firstName'); return false; }
+                if (!dob || !isOver18(dob)) {
+                    document.getElementById('age-error').classList.remove('hidden');
+                    highlightError('dob');
+                    return false;
+                }
+                document.getElementById('age-error').classList.add('hidden');
+            }
+            if (currentStep === 2) {
+                const email = document.getElementById('email').value;
+                const pass = document.getElementById('password').value;
+                if (!email.includes('@')) { highlightError('email'); return false; }
+                if (pass.length < 8) { highlightError('password'); return false; }
+            }
+            if (currentStep === 3) {
+                const check = document.getElementById('legal-check').checked;
+                if (!check) {
+                    alert(currentLang === 'es' ? 'Debes aceptar los términos legales.' : 'You must accept the legal terms.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function highlightError(id) {
+            const el = document.getElementById(id);
+            el.classList.add('ring-2', 'ring-red-400', 'border-red-400');
+            setTimeout(() => el.classList.remove('ring-2', 'ring-red-400', 'border-red-400'), 2000);
+        }
+
+        function isOver18(dateString) {
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age >= 18;
+        }
+
+        function validateEmail() {
+            const email = document.getElementById('email').value;
+            const check = document.getElementById('email-check');
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if(regex.test(email)) check.classList.remove('hidden');
+            else check.classList.add('hidden');
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const s1 = document.getElementById('strength-1');
+            const s2 = document.getElementById('strength-2');
+            const s3 = document.getElementById('strength-3');
+            const s4 = document.getElementById('strength-4');
+            
+            // Reset
+            [s1, s2, s3, s4].forEach(s => { s.className = 'bg-gray-200 rounded-full transition-colors duration-300'; });
+
+            let score = 0;
+            if (password.length > 5) score++;
+            if (password.length > 8) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            if (score >= 1) s1.classList.replace('bg-gray-200', 'bg-red-400');
+            if (score >= 2) s2.classList.replace('bg-gray-200', 'bg-yellow-400');
+            if (score >= 3) s3.classList.replace('bg-gray-200', 'bg-yellow-400');
+            if (score >= 4) s4.classList.replace('bg-gray-200', 'bg-green-500');
+        }
+
+        // --- Drag & Drop Logic ---
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-active');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-active');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-active');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            fileNameDisplay.innerText = `${file.name}`;
+            fileNameDisplay.classList.remove('hidden');
+            dropZone.querySelector('p.font-medium').innerText = currentLang === 'es' ? 'Archivo cargado' : 'File Uploaded';
+            dropZone.querySelector('.fa-cloud-arrow-up').classList.remove('text-gray-400');
+            dropZone.querySelector('.fa-cloud-arrow-up').classList.add('text-green-500');
+        }
+
+    </script>
+</body>
+</html>

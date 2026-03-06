@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTicket | Tu Suerte, Segura</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Playfair Display (Elegant) & Inter (Clean) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Configuration for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#F8FAFC',    // Slate-50 variant
+                            text: '#1E293B',  // Slate-800
+                            gold: '#C9A227',  // Custom Gold
+                            goldHover: '#B08D21',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Smooth scrolling */
+        html { scroll-behavior: smooth; }
+        
+        /* Custom Animations */
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gold Gradient Text */
+        .text-gradient-gold {
+            background: linear-gradient(to right, #C9A227, #E5C359, #C9A227);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+    </style>
+</head>
+<body class="bg-brand-bg text-brand-text font-sans antialiased overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer">
+                    <i class="fa-solid fa-ticket text-brand-gold text-2xl mr-2"></i>
+                    <span class="font-serif text-2xl font-bold tracking-tight text-brand-text">Safe<span class="text-brand-gold">Ticket</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#process" class="hover:text-brand-gold transition-colors font-medium" data-i18n="nav_process">Cómo funciona</a>
+                    <a href="#raffles" class="hover:text-brand-gold transition-colors font-medium" data-i18n="nav_raffles">Sorteos</a>
+                    <a href="#security" class="hover:text-brand-gold transition-colors font-medium" data-i18n="nav_security">Seguridad</a>
+                    
+                    <!-- Language Selector -->
+                    <div class="border-l pl-6 border-gray-200">
+                        <button onclick="toggleLanguage()" class="flex items-center space-x-1 hover:text-brand-gold transition font-semibold focus:outline-none">
+                            <i class="fa-solid fa-globe text-brand-gold"></i>
+                            <span id="current-lang">ES</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-brand-text hover:text-brand-gold focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
+                <a href="#process" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 hover:text-brand-gold" data-i18n="nav_process">Cómo funciona</a>
+                <a href="#raffles" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 hover:text-brand-gold" data-i18n="nav_raffles">Sorteos</a>
+                <a href="#security" onclick="toggleMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 hover:text-brand-gold" data-i18n="nav_security">Seguridad</a>
+                <button onclick="toggleLanguage(); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-brand-gold bg-gray-50 mt-2">
+                    <i class="fa-solid fa-globe mr-2"></i> <span data-i18n="lang_switch">Cambiar a Inglés</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="fade-in">
+                <span class="inline-block py-1 px-3 rounded-full bg-brand-gold/10 text-brand-gold text-sm font-semibold mb-6 tracking-wide uppercase" data-i18n="hero_badge">
+                    Gestoría Oficial & Segura
+                </span>
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-brand-text mb-6 leading-tight">
+                    <span data-i18n="hero_title_1">La suerte es global,</span><br>
+                    <span class="text-gradient-gold" data-i18n="hero_title_2">la seguridad es nuestra.</span>
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-600 mb-10" data-i18n="hero_subtitle">
+                    Adquirimos tus boletos de lotería oficiales en USA y los custodiamos digitalmente para ti. Juega Powerball y Mega Millions desde cualquier parte del mundo.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#raffles" class="px-8 py-4 bg-brand-gold text-white font-bold rounded-lg shadow-lg hover:bg-brand-goldHover transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                        <span data-i18n="cta_primary">Jugar Ahora</span>
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                    <a href="#process" class="px-8 py-4 bg-white text-brand-text border border-gray-200 font-bold rounded-lg hover:bg-gray-50 transition-all duration-300 flex items-center justify-center">
+                        <span data-i18n="cta_secondary">Cómo funciona</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Background Elements -->
+        <div class="absolute top-0 left-0 w-full h-full -z-10 opacity-30">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-brand-gold/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+            <div class="absolute top-20 right-10 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-8 left-1/2 w-72 h-72 bg-brand-gold/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-text mb-4" data-i18n="process_title">Proceso Transparente</h2>
+                <p class="text-gray-600 max-w-xl mx-auto" data-i18n="process_subtitle">Cuatro pasos simples separan tu deseo de la posibilidad de ganar.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+                <!-- Connecting Line (Desktop) -->
+                <div class="hidden lg:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 -z-0"></div>
+
+                <!-- Step 1 -->
+                <div class="relative bg-white p-6 rounded-xl hover:shadow-xl transition-shadow duration-300 z-10 group">
+                    <div class="w-16 h-16 mx-auto bg-brand-bg rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold transition-colors duration-300">
+                        <i class="fa-solid fa-list-ol text-2xl text-brand-gold group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-center" data-i18n="step_1_title">Selección</h3>
+                    <p class="text-gray-500 text-center text-sm" data-i18n="step_1_desc">Eliges tus números de la suerte o usas la selección rápida en nuestra plataforma.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative bg-white p-6 rounded-xl hover:shadow-xl transition-shadow duration-300 z-10 group">
+                    <div class="w-16 h-16 mx-auto bg-brand-bg rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold transition-colors duration-300">
+                        <i class="fa-solid fa-lock text-2xl text-brand-gold group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-center" data-i18n="step_2_title">Pago Seguro</h3>
+                    <p class="text-gray-500 text-center text-sm" data-i18n="step_2_desc">Realizas el pago mediante métodos encriptados y verificados (Cripto, Zelle, etc).</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative bg-white p-6 rounded-xl hover:shadow-xl transition-shadow duration-300 z-10 group">
+                    <div class="w-16 h-16 mx-auto bg-brand-bg rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold transition-colors duration-300">
+                        <i class="fa-solid fa-store text-2xl text-brand-gold group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-center" data-i18n="step_3_title">Compra Física</h3>
+                    <p class="text-gray-500 text-center text-sm" data-i18n="step_3_desc">Nuestros agentes compran el boleto oficial en un establecimiento autorizado.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="relative bg-white p-6 rounded-xl hover:shadow-xl transition-shadow duration-300 z-10 group">
+                    <div class="w-16 h-16 mx-auto bg-brand-bg rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold transition-colors duration-300">
+                        <i class="fa-solid fa-file-shield text-2xl text-brand-gold group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-center" data-i18n="step_4_title">Custodia Digital</h3>
+                    <p class="text-gray-500 text-center text-sm" data-i18n="step_4_desc">Escaneamos tu boleto a tu cuenta y guardamos el original en una caja fuerte.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Jackpots Section -->
+    <section id="raffles" class="py-20 bg-brand-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-text mb-4" data-i18n="jackpot_title">Sorteos Destacados</h2>
+                <p class="text-gray-600" data-i18n="jackpot_subtitle">Los premios más grandes del mundo, a un clic de distancia.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Powerball Card -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                    <div class="bg-gradient-to-r from-red-600 to-red-500 p-6 flex justify-between items-center text-white">
+                        <span class="font-bold text-xl tracking-wider">POWERBALL</span>
+                        <i class="fa-solid fa-star text-yellow-300 animate-pulse"></i>
+                    </div>
+                    <div class="p-8 text-center">
+                        <p class="text-sm text-gray-500 uppercase tracking-widest font-semibold mb-2" data-i18n="jackpot_label">PREMIO MAYOR</p>
+                        <h3 class="text-4xl md:text-5xl font-bold text-brand-text mb-6">$420,000,000</h3>
+                        
+                        <div class="flex justify-center items-center space-x-2 text-gray-600 mb-8 bg-gray-50 p-3 rounded-lg">
+                            <i class="fa-regular fa-clock text-brand-gold"></i>
+                            <span class="font-mono text-lg countdown" data-time="15000">04:12:35</span>
+                            <span class="text-xs text-gray-400" data-i18n="time_left">para cerrar</span>
+                        </div>
+
+                        <button class="w-full bg-brand-text text-white py-4 rounded-lg font-bold hover:bg-gray-800 transition-colors flex items-center justify-center group">
+                            <span data-i18n="btn_play">Jugar Powerball</span>
+                            <i class="fa-solid fa-ticket ml-2 text-brand-gold group-hover:rotate-45 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Florida Lotto Card -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                    <div class="bg-gradient-to-r from-green-600 to-green-500 p-6 flex justify-between items-center text-white">
+                        <span class="font-bold text-xl tracking-wider">FLORIDA LOTTO</span>
+                        <i class="fa-solid fa-clover text-green-200"></i>
+                    </div>
+                    <div class="p-8 text-center">
+                        <p class="text-sm text-gray-500 uppercase tracking-widest font-semibold mb-2" data-i18n="jackpot_label">PREMIO MAYOR</p>
+                        <h3 class="text-4xl md:text-5xl font-bold text-brand-text mb-6">$14,500,000</h3>
+                        
+                        <div class="flex justify-center items-center space-x-2 text-gray-600 mb-8 bg-gray-50 p-3 rounded-lg">
+                            <i class="fa-regular fa-clock text-brand-gold"></i>
+                            <span class="font-mono text-lg countdown" data-time="9000">02:30:15</span>
+                            <span class="text-xs text-gray-400" data-i18n="time_left">para cerrar</span>
+                        </div>
+
+                        <button class="w-full bg-brand-text text-white py-4 rounded-lg font-bold hover:bg-gray-800 transition-colors flex items-center justify-center group">
+                            <span data-i18n="btn_play_fl">Jugar FL Lotto</span>
+                            <i class="fa-solid fa-ticket ml-2 text-brand-gold group-hover:rotate-45 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust/Security Banner -->
+    <section id="security" class="bg-brand-text py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 text-gray-300">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-shield-halved text-brand-gold text-2xl"></i>
+                    <span class="font-medium" data-i18n="feature_secure">Encriptación SSL 256-bit</span>
+                </div>
+                <div class="hidden md:block h-6 w-px bg-gray-700"></div>
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-building-columns text-brand-gold text-2xl"></i>
+                    <span class="font-medium" data-i18n="feature_legal">Entidad Legal Registrada</span>
+                </div>
+                <div class="hidden md:block h-6 w-px bg-gray-700"></div>
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-headset text-brand-gold text-2xl"></i>
+                    <span class="font-medium" data-i18n="feature_support">Soporte 24/7</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white border-t border-gray-800 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center mb-4">
+                        <i class="fa-solid fa-ticket text-brand-gold text-xl mr-2"></i>
+                        <span class="font-serif text-xl font-bold">Safe<span class="text-brand-gold">Ticket</span></span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed" data-i18n="footer_about">
+                        La forma más segura e inteligente de participar en las loterías oficiales de Estados Unidos desde la comodidad de tu hogar.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-bold mb-4 text-brand-gold uppercase text-sm tracking-wider" data-i18n="footer_links">Enlaces</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#raffles" class="hover:text-white transition">Sorteos</a></li>
+                        <li><a href="#" class="hover:text-white transition">Resultados</a></li>
+                        <li><a href="#" class="hover:text-white transition">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h4 class="font-bold mb-4 text-brand-gold uppercase text-sm tracking-wider" data-i18n="footer_legal">Legal</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition" data-i18n="legal_terms">Términos y Condiciones</a></li>
+                        <li><a href="#" class="hover:text-white transition" data-i18n="legal_privacy">Política de Privacidad</a></li>
+                        <li><a href="#" class="hover:text-white transition" data-i18n="legal_cookies">Política de Cookies</a></li>
+                    </ul>
+                </div>
+
+                <!-- Payments & Social -->
+                <div>
+                    <h4 class="font-bold mb-4 text-brand-gold uppercase text-sm tracking-wider" data-i18n="footer_payment">Pagos Aceptados</h4>
+                    <div class="flex flex-wrap gap-3 mb-6">
+                        <!-- Simulated Payment Icons -->
+                        <div class="bg-white text-brand-text px-2 py-1 rounded text-xs font-bold flex items-center"><i class="fa-brands fa-bitcoin mr-1 text-orange-500"></i> Crypto</div>
+                        <div class="bg-white text-purple-600 px-2 py-1 rounded text-xs font-bold">Zelle®</div>
+                        <div class="bg-white text-blue-600 px-2 py-1 rounded text-xs font-bold">PagoMóvil</div>
+                    </div>
+                    
+                    <h4 class="font-bold mb-4 text-brand-gold uppercase text-sm tracking-wider" data-i18n="footer_social">Síguenos</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-facebook text-xl"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="text-gray-500 text-xs">
+                    &copy; 2023 SafeTicket. <span data-i18n="footer_copy">Todos los derechos reservados. Juega con responsabilidad +18.</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Internationalization (i18n) Logic ---
+        const translations = {
+            es: {
+                nav_process: "Cómo funciona",
+                nav_raffles: "Sorteos",
+                nav_security: "Seguridad",
+                lang_switch: "Cambiar a Inglés",
+                hero_badge: "Gestoría Oficial & Segura",
+                hero_title_1: "La suerte es global,",
+                hero_title_2: "la seguridad es nuestra.",
+                hero_subtitle: "Adquirimos tus boletos de lotería oficiales en USA y los custodiamos digitalmente para ti. Juega Powerball y Mega Millions desde cualquier parte del mundo.",
+                cta_primary: "Jugar Ahora",
+                cta_secondary: "Cómo funciona",
+                process_title: "Proceso Transparente",
+                process_subtitle: "Cuatro pasos simples separan tu deseo de la posibilidad de ganar.",
+                step_1_title: "Selección",
+                step_1_desc: "Eliges tus números de la suerte o usas la selección rápida en nuestra plataforma.",
+                step_2_title: "Pago Seguro",
+                step_2_desc: "Realizas el pago mediante métodos encriptados y verificados (Cripto, Zelle, etc).",
+                step_3_title: "Compra Física",
+                step_3_desc: "Nuestros agentes compran el boleto oficial en un establecimiento autorizado.",
+                step_4_title: "Custodia Digital",
+                step_4_desc: "Escaneamos tu boleto a tu cuenta y guardamos el original en una caja fuerte.",
+                jackpot_title: "Sorteos Destacados",
+                jackpot_subtitle: "Los premios más grandes del mundo, a un clic de distancia.",
+                jackpot_label: "PREMIO MAYOR",
+                time_left: "para cerrar",
+                btn_play: "Jugar Powerball",
+                btn_play_fl: "Jugar FL Lotto",
+                feature_secure: "Encriptación SSL 256-bit",
+                feature_legal: "Entidad Legal Registrada",
+                feature_support: "Soporte 24/7",
+                footer_about: "La forma más segura e inteligente de participar en las loterías oficiales de Estados Unidos desde la comodidad de tu hogar.",
+                footer_links: "Enlaces",
+                footer_legal: "Legal",
+                legal_terms: "Términos y Condiciones",
+                legal_privacy: "Política de Privacidad",
+                legal_cookies: "Política de Cookies",
+                footer_payment: "Pagos Aceptados",
+                footer_social: "Síguenos",
+                footer_copy: "Todos los derechos reservados. Juega con responsabilidad +18."
+            },
+            en: {
+                nav_process: "How it works",
+                nav_raffles: "Raffles",
+                nav_security: "Security",
+                lang_switch: "Switch to Spanish",
+                hero_badge: "Official & Secure Courier",
+                hero_title_1: "Luck is global,",
+                hero_title_2: "security is ours.",
+                hero_subtitle: "We purchase your official US lottery tickets and digitally custody them for you. Play Powerball and Mega Millions from anywhere in the world.",
+                cta_primary: "Play Now",
+                cta_secondary: "How it works",
+                process_title: "Transparent Process",
+                process_subtitle: "Four simple steps stand between your wish and the chance to win.",
+                step_1_title: "Selection",
+                step_1_desc: "Pick your lucky numbers or use quick pick on our platform.",
+                step_2_title: "Secure Payment",
+                step_2_desc: "Pay using encrypted and verified methods (Crypto, Zelle, etc).",
+                step_3_title: "Physical Purchase",
+                step_3_desc: "Our agents buy the official ticket at an authorized retailer.",
+                step_4_title: "Digital Custody",
+                step_4_desc: "We scan your ticket to your account and keep the original in a safe.",
+                jackpot_title: "Featured Raffles",
+                jackpot_subtitle: "The world's biggest jackpots, just a click away.",
+                jackpot_label: "JACKPOT",
+                time_left: "until close",
+                btn_play: "Play Powerball",
+                btn_play_fl: "Play FL Lotto",
+                feature_secure: "256-bit SSL Encryption",
+                feature_legal: "Registered Legal Entity",
+                feature_support: "24/7 Support",
+                footer_about: "The safest and smartest way to participate in official US lotteries from the comfort of your home.",
+                footer_links: "Links",
+                footer_legal: "Legal",
+                legal_terms: "Terms & Conditions",
+                legal_privacy: "Privacy Policy",
+                legal_cookies: "Cookie Policy",
+                footer_payment: "Accepted Payments",
+                footer_social: "Follow Us",
+                footer_copy: "All rights reserved. Play responsibly +18."
+            }
+        };
+
+        let currentLanguage = 'es';
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'es' ? 'en' : 'es';
+            
+            // Update button text
+            document.getElementById('current-lang').innerText = currentLanguage.toUpperCase();
+            
+            // Update all elements with data-i18n attribute
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLanguage][key]) {
+                    el.innerText = translations[currentLanguage][key];
+                }
+            });
+        }
+
+        // --- UI Logic ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- Countdown Logic ---
+        // Simulating countdowns with different base times
+        const countdowns = document.querySelectorAll('.countdown');
+        
+        countdowns.forEach(counter => {
+            // Get random starting seconds or use data attribute logic if needed real
+            let duration = parseInt(Math.random() * 100000) + 50000; 
+            
+            const updateCounter = () => {
+                duration--;
+                if(duration < 0) duration = 86400; // Reset to 24h if hits 0 for demo
+
+                const h = Math.floor(duration / 3600);
+                const m = Math.floor((duration % 3600) / 60);
+                const s = Math.floor(duration % 60);
+
+                counter.innerText = 
+                    `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            setInterval(updateCounter, 1000);
+            updateCounter(); // Initial run
+        });
+
+    </script>
+</body>
+</html>
