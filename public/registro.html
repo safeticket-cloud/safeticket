@@ -13,10 +13,27 @@
     <style>
         .input-elegant { transition: all 0.2s; border: 1px solid #E2E8F0; }
         .input-elegant:focus { border-color: #C9A227; outline: none; box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1); }
-        .drag-active { border-color: #C9A227 !important; background-color: #FDF8E8 !important; }
     </style>
 </head>
 <body class="bg-brand-bg text-brand-text min-h-screen flex flex-col items-center justify-center py-10 px-4">
+
+    <div id="termsModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold font-serif">Términos de Custodia Digital</h3>
+                <button onclick="document.getElementById('termsModal').classList.add('hidden')" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto text-sm text-gray-600 space-y-4 leading-relaxed">
+                <p><strong>1. Servicio de Mensajería:</strong> SafeTicket actúa exclusivamente como un servicio de mensajería independiente. Compramos boletos oficiales en representación del cliente.</p>
+                <p><strong>2. Mayoría de Edad (21+):</strong> Por regulaciones internacionales de juegos de azar, el usuario confirma bajo juramento ser mayor de 21 años. El sistema validará esto mediante el documento de identidad.</p>
+                <p><strong>3. Cero Comisiones en Premios:</strong> Garantizamos que el 100% de los premios ganados serán transferidos al cliente sin deducciones por parte de nuestra plataforma, salvo los impuestos aplicados por el país emisor de la lotería.</p>
+                <p><strong>4. Custodia:</strong> El boleto físico se mantendrá en una bóveda de seguridad hasta la fecha del sorteo. El cliente recibirá una copia digital inalterable.</p>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl text-right">
+                <button onclick="document.getElementById('termsModal').classList.add('hidden')" class="bg-brand-gold text-white px-8 py-2.5 rounded-lg font-bold hover:bg-brand-goldHover shadow-md">Entendido</button>
+            </div>
+        </div>
+    </div>
 
     <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg overflow-hidden relative">
         <div class="bg-white p-8 border-b border-gray-50 text-center">
@@ -54,17 +71,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                        <input type="text" id="firstName" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="Juan">
+                        <input type="text" id="firstName" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                        <input type="text" id="lastName" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="Pérez">
+                        <input type="text" id="lastName" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Identificación</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de ID</label>
                         <select id="tipo_doc" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm text-gray-600">
                             <option value="CEDULA">Cédula</option>
                             <option value="PASAPORTE">Pasaporte</option>
@@ -72,7 +89,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Número de Documento</label>
-                        <input type="text" id="num_doc" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="V-12345678">
+                        <input type="text" id="num_doc" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm">
                     </div>
                 </div>
 
@@ -80,14 +97,11 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
                         <input type="date" id="dob" onchange="validateAge()" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm text-gray-600">
-                        <p id="age-error" class="hidden text-red-500 text-xs mt-1">Debes ser mayor de 18 años.</p>
+                        <p id="age-error" class="hidden text-red-500 text-xs mt-1">Debes ser mayor de 21 años para jugar.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono Móvil</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-mobile-screen absolute left-3 top-3.5 text-gray-400"></i>
-                            <input type="tel" id="telefono" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="+58 414 000 0000">
-                        </div>
+                        <input type="tel" id="telefono" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="+58 414 000 0000">
                     </div>
                 </div>
             </div>
@@ -96,59 +110,45 @@
                 <h3 class="text-xl font-serif font-semibold text-brand-text mb-6">Configura tu Acceso</h3>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-                    <div class="relative">
-                        <i class="fa-regular fa-envelope absolute left-3 top-3.5 text-gray-400"></i>
-                        <input type="email" id="email" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="juan@ejemplo.com">
-                    </div>
+                    <input type="email" id="email" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña Maestra</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-3 top-3.5 text-gray-400"></i>
-                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm" placeholder="••••••••">
-                    </div>
-                    <p class="text-xs text-gray-400 mt-1">Mínimo 8 caracteres.</p>
+                    <input type="password" id="password" class="w-full px-4 py-3 rounded-lg bg-gray-50 input-elegant text-sm">
                 </div>
             </div>
 
             <div id="step-3" class="step-content hidden space-y-6">
-                <h3 class="text-xl font-serif font-semibold text-brand-text mb-6">Verificación de Identidad (KYC)</h3>
+                <h3 class="text-xl font-serif font-semibold text-brand-text mb-6">Verificación (KYC)</h3>
                 
-                <div id="drop-zone" onclick="document.getElementById('file-upload').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-gold hover:bg-brand-goldLight/20 group transition-all">
+                <div id="drop-zone" onclick="document.getElementById('file-upload').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-gold transition-all">
                     <input type="file" id="file-upload" class="hidden" accept="image/*,.pdf" onchange="handleFile(this.files[0])">
                     <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i id="upload-icon" class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400"></i>
                     </div>
-                    <p id="upload-text" class="font-medium text-gray-700">Haz clic o arrastra tu ID aquí</p>
-                    <p class="text-xs text-gray-400 mt-1">Obligatorio para verificar identidad</p>
+                    <p id="upload-text" class="font-medium text-gray-700">Haz clic para subir tu ID</p>
                 </div>
 
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-100 mt-4">
                     <label class="flex items-start space-x-3 cursor-pointer">
-                        <input type="checkbox" id="legal-check" class="mt-1 w-5 h-5 text-brand-gold border-gray-300 rounded focus:ring-brand-gold">
+                        <input type="checkbox" id="legal-check" class="mt-1 w-5 h-5 text-brand-gold rounded focus:ring-brand-gold">
                         <div class="text-sm text-gray-600">
-                            Acepto los <a href="#" class="text-brand-gold hover:underline font-semibold">Términos de Custodia Digital</a> y confirmo mis datos.
+                            Acepto los <button type="button" onclick="document.getElementById('termsModal').classList.remove('hidden')" class="text-brand-gold hover:underline font-semibold">Términos de Custodia Digital</button> y confirmo ser mayor de 21 años.
                         </div>
                     </label>
                 </div>
             </div>
 
             <div class="mt-10 flex justify-between items-center">
-                <button type="button" id="prevBtn" onclick="prevStep()" class="hidden px-6 py-2.5 rounded-lg text-gray-500 font-medium hover:bg-gray-100 transition">
-                    <i class="fa-solid fa-arrow-left mr-2"></i> Atrás
-                </button>
-                <button type="button" id="nextBtn" onclick="nextStep()" class="ml-auto px-8 py-3 bg-brand-gold text-white font-bold rounded-lg shadow-lg hover:bg-brand-goldHover transition-all flex items-center">
-                    <span id="nextBtnText">Continuar</span> <i class="fa-solid fa-arrow-right ml-2"></i>
-                </button>
+                <button type="button" id="prevBtn" onclick="prevStep()" class="hidden px-6 py-2.5 rounded-lg text-gray-500 font-medium hover:bg-gray-100"><i class="fa-solid fa-arrow-left mr-2"></i> Atrás</button>
+                <button type="button" id="nextBtn" onclick="nextStep()" class="ml-auto px-8 py-3 bg-brand-gold text-white font-bold rounded-lg shadow-lg hover:bg-brand-goldHover"><span id="nextBtnText">Continuar</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
             </div>
         </form>
     </div>
 
     <script>
-        let currentStep = 1;
-        const totalSteps = 3;
+        let currentStep = 1; const totalSteps = 3;
 
-        // Manejo visual del archivo subido
         function handleFile(file) {
             if(file) {
                 document.getElementById('upload-text').innerText = 'Archivo cargado: ' + file.name;
@@ -168,9 +168,8 @@
             } else {
                 const btnText = document.getElementById('nextBtnText');
                 const originalText = btnText.innerText;
-                btnText.innerText = 'Subiendo documento...';
+                btnText.innerText = 'Subiendo...';
 
-                // Usamos FormData para poder enviar el archivo de imagen al servidor
                 const formData = new FormData();
                 formData.append('nombre', document.getElementById('firstName').value);
                 formData.append('apellido', document.getElementById('lastName').value);
@@ -182,29 +181,17 @@
                 formData.append('password', document.getElementById('password').value);
                 
                 const fileInput = document.getElementById('file-upload');
-                if(fileInput.files[0]) {
-                    formData.append('documento_archivo', fileInput.files[0]);
-                }
+                if(fileInput.files[0]) formData.append('documento_archivo', fileInput.files[0]);
 
-                // El navegador configura los headers automáticamente para FormData
-                fetch('/api/registro', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
+                fetch('/api/registro', { method: 'POST', body: formData })
+                .then(r => r.json()).then(data => {
                     if(data.exito) {
-                        alert('¡Cuenta creada y documento enviado! Tu identidad está PENDIENTE de verificación. Inicia sesión ahora.');
+                        alert('¡Cuenta creada! Tu identidad está PENDIENTE de verificación.');
                         window.location.href = '/login.html';
                     } else {
-                        alert('Error: ' + data.mensaje);
-                        btnText.innerText = originalText;
+                        alert('Error: ' + data.mensaje); btnText.innerText = originalText;
                     }
-                })
-                .catch(error => {
-                    alert('Error subiendo el archivo al servidor.');
-                    btnText.innerText = originalText;
-                });
+                }).catch(e => { alert('Error de conexión.'); btnText.innerText = originalText; });
             }
         }
 
@@ -220,20 +207,6 @@
         function updateUI() {
             const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
             document.getElementById('progress-line').style.width = `${progress}%`;
-
-            document.querySelectorAll('.step-indicator').forEach(el => {
-                const step = parseInt(el.getAttribute('data-step'));
-                const circle = el.querySelector('div');
-                const label = el.querySelector('span');
-                if (step <= currentStep) {
-                    circle.className = 'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 bg-brand-gold text-white ring-4 ring-white shadow-lg';
-                    label.className = 'text-xs font-medium mt-2 text-brand-gold';
-                } else {
-                    circle.className = 'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 bg-gray-200 text-gray-500 ring-4 ring-white';
-                    label.className = 'text-xs font-medium mt-2 text-gray-400';
-                }
-            });
-
             document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
             document.getElementById('nextBtnText').innerText = currentStep === totalSteps ? 'Finalizar Registro' : 'Continuar';
         }
@@ -244,38 +217,30 @@
                 const num_doc = document.getElementById('num_doc').value;
                 const dob = document.getElementById('dob').value;
                 if(!name || !num_doc) { alert('Completa todos los campos'); return false; }
-                if (!dob || !isOver18(dob)) {
-                    document.getElementById('age-error').classList.remove('hidden');
-                    return false;
+                if (!dob || !isOver21(dob)) {
+                    document.getElementById('age-error').classList.remove('hidden'); return false;
                 }
                 document.getElementById('age-error').classList.add('hidden');
             }
             if (currentStep === 2) {
-                const email = document.getElementById('email').value;
-                const pass = document.getElementById('password').value;
-                if (!email.includes('@')) { alert('Correo inválido'); return false; }
-                if (pass.length < 8) { alert('La contraseña debe tener 8 caracteres'); return false; }
+                if (!document.getElementById('email').value.includes('@')) { alert('Correo inválido'); return false; }
+                if (document.getElementById('password').value.length < 8) { alert('Mínimo 8 caracteres'); return false; }
             }
             if (currentStep === 3) {
-                const fileInput = document.getElementById('file-upload');
-                if(fileInput.files.length === 0) {
-                    alert('Debes subir la foto de tu documento de identidad (Cédula o Pasaporte).');
-                    return false;
-                }
-                if (!document.getElementById('legal-check').checked) {
-                    alert('Debes aceptar los términos legales.'); return false;
-                }
+                if(document.getElementById('file-upload').files.length === 0) { alert('Sube tu documento de identidad.'); return false; }
+                if (!document.getElementById('legal-check').checked) { alert('Acepta los términos.'); return false; }
             }
             return true;
         }
 
-        function isOver18(dateString) {
+        // VALIDACIÓN DE 21 AÑOS
+        function isOver21(dateString) {
             const today = new Date();
             const birthDate = new Date(dateString);
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-            return age >= 18;
+            return age >= 21;
         }
     </script>
 </body>

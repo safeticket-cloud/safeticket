@@ -3,118 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeTicket | App Completa</title>
+    <title>SafeTicket | Bóveda del Cliente</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        tailwind.config = { theme: { extend: { colors: { brand: { bg: '#F8FAFC', text: '#1E293B', gold: '#C9A227', goldLight: '#FDF8E8', goldHover: '#B08D21' } } } } }
+        tailwind.config = { theme: { extend: { colors: { brand: { bg: '#F8FAFC', text: '#1E293B', gold: '#C9A227', goldLight: '#FDF8E8' } } } } }
     </script>
-    <style>
-        .transition-all-fast { transition: all 0.2s ease-in-out; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 4px; }
-    </style>
 </head>
 <body class="bg-brand-bg text-brand-text font-sans antialiased h-screen overflow-hidden flex">
 
     <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full shadow-sm z-20">
         <div class="h-20 flex items-center px-6 border-b border-gray-50">
             <i class="fa-solid fa-ticket text-brand-gold text-2xl mr-2"></i>
-            <span class="font-serif text-2xl font-bold tracking-tight text-brand-text">Safe<span class="text-brand-gold">Ticket</span></span>
+            <span class="font-serif text-2xl font-bold">Safe<span class="text-brand-gold">Ticket</span></span>
         </div>
-        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="#" onclick="switchView('view-dashboard')" data-target="view-dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 bg-brand-goldLight text-brand-gold rounded-xl font-medium"><i class="fa-solid fa-vault w-5 text-center"></i><span>Mi Bóveda</span></a>
-            <a href="#" onclick="switchView('view-buy')" data-target="view-buy" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium"><i class="fa-solid fa-cart-shopping w-5 text-center"></i><span>Comprar Boletos</span></a>
-            <a href="#" onclick="switchView('view-scans')" data-target="view-scans" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium"><i class="fa-solid fa-file-invoice w-5 text-center"></i><span>Mis Escaneos</span></a>
-            <a href="#" onclick="switchView('view-wallet')" data-target="view-wallet" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium"><i class="fa-solid fa-wallet w-5 text-center"></i><span>Billetera</span></a>
-            <a href="#" onclick="switchView('view-settings')" data-target="view-settings" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium"><i class="fa-solid fa-gear w-5 text-center"></i><span>Ajustes</span></a>
+        <nav class="flex-1 py-6 px-4 space-y-2">
+            <a href="#" onclick="switchView('view-dashboard')" data-target="view-dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 bg-brand-goldLight text-brand-gold rounded-xl font-medium"><i class="fa-solid fa-vault w-5"></i><span>Mi Bóveda</span></a>
+            <a href="#" onclick="switchView('view-wallet')" data-target="view-wallet" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium"><i class="fa-solid fa-wallet w-5"></i><span>Billetera</span></a>
+            <a href="#" onclick="switchView('view-settings')" data-target="view-settings" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium"><i class="fa-solid fa-gear w-5"></i><span>Ajustes</span></a>
         </nav>
         <div class="p-4 border-t border-gray-50">
-            <button onclick="cerrarSesion()" class="w-full flex items-center justify-center space-x-2 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 px-4 py-3 rounded-xl font-medium transition-all-fast">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar Sesión</span>
-            </button>
+            <button onclick="cerrarSesion()" class="w-full text-red-500 hover:bg-red-50 py-3 rounded-xl font-medium"><i class="fa-solid fa-power-off"></i> Salir</button>
         </div>
     </aside>
 
     <div class="flex-1 flex flex-col h-full overflow-hidden relative">
-        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 z-10 sticky top-0">
-            <div class="hidden md:block">
-                <h2 class="text-xl font-serif font-bold text-brand-text">Hola, <span id="user-greeting-name">Usuario</span> <i class="fa-solid fa-hand-wave text-brand-gold ml-1"></i></h2>
-                <p id="header-date" class="text-xs text-gray-400 font-medium">Cargando fecha...</p>
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b flex items-center justify-between px-6 z-10 sticky top-0">
+            <div>
+                <h2 class="text-xl font-serif font-bold">Hola, <span id="user-greeting-name">Usuario</span></h2>
             </div>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <div id="btn-profile" onclick="document.getElementById('dropdown-profile').classList.toggle('hidden')" class="h-10 w-10 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center cursor-pointer">
-                        <span class="font-bold text-brand-gold" id="user-avatar">U</span>
-                    </div>
-                    <div id="dropdown-profile" class="hidden absolute right-0 mt-4 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-                        <div class="p-4 border-b border-gray-50 bg-gray-50">
-                            <p class="font-bold text-brand-text text-sm" id="dropdown-name">Nombre</p>
-                            <p class="text-xs text-gray-500 truncate" id="dropdown-email">correo@ejemplo.com</p>
-                        </div>
-                        <div class="py-2 border-t border-gray-50">
-                            <button onclick="cerrarSesion()" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50"><i class="fa-solid fa-power-off mr-2"></i> Cerrar Sesión</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="h-10 w-10 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center cursor-pointer">
+                <span class="font-bold text-brand-gold" id="user-avatar">U</span>
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+        <main class="flex-1 overflow-y-auto p-6 relative">
             
-            <div id="kyc-banner" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded shadow-sm">
-                <div class="flex">
-                    <div class="flex-shrink-0"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-1"></i></div>
-                    <div class="ml-3">
-                        <p class="text-sm text-yellow-800 font-bold">Verificación de Identidad Pendiente</p>
-                        <p class="text-sm text-yellow-700 mt-1">Tu cuenta está siendo revisada. Las funciones de depósito y compra están deshabilitadas hasta que un administrador valide tu identidad.</p>
-                    </div>
+            <div id="kyc-banner" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded">
+                <p class="text-sm text-yellow-800 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Verificación Pendiente</p>
+                <p class="text-sm text-yellow-700">Tus funciones financieras están bloqueadas hasta validar tu documento.</p>
+            </div>
+
+            <div id="view-dashboard" class="view-section max-w-6xl mx-auto space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <p class="text-sm text-gray-400 font-medium">Balance Disponible</p>
+                    <h3 id="saldo-principal" class="text-4xl font-bold mb-4">$0.00</h3>
                 </div>
             </div>
 
-            <div id="view-dashboard" class="view-section max-w-6xl mx-auto space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
-                        <p class="text-sm text-gray-400 font-medium uppercase mb-1">Balance Disponible</p>
-                        <h3 id="saldo-principal" class="text-4xl font-bold text-brand-text mb-4">$0.00</h3>
-                        <div class="flex space-x-3">
-                            <button class="btn-deposit flex-1 bg-brand-text text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">Depositar</button>
-                            <button class="flex-1 bg-white border border-gray-200 text-brand-text py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-50">Retirar</button>
+            <div id="view-wallet" class="view-section hidden max-w-6xl mx-auto">
+                <h3 class="text-2xl font-serif font-bold mb-4">Mi Billetera</h3>
+                <div class="bg-white border rounded-xl p-8 shadow-sm max-w-2xl"><h3 id="saldo-wallet" class="text-4xl font-bold">$0.00</h3></div>
+            </div>
+
+            <div id="view-settings" class="view-section hidden max-w-4xl mx-auto space-y-8">
+                <h3 class="text-2xl font-serif font-bold text-brand-text mb-6">Configuración de Cuenta</h3>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-8">
+                    <div class="flex items-center space-x-6 border-b border-gray-50 pb-8">
+                        <div class="relative group cursor-pointer">
+                            <div class="w-20 h-20 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center text-3xl font-bold text-brand-gold" id="settings-avatar">U</div>
+                            <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i class="fa-solid fa-camera text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold" id="settings-name">Nombre</h4>
+                            <p class="text-sm text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded-full mt-1" id="settings-rol">CLIENTE</p>
                         </div>
                     </div>
-                </div>
 
-                <div>
-                    <h3 class="text-xl font-serif font-bold text-brand-text mb-4">Boletos Activos</h3>
-                    <div id="boletos-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-bold mb-4 flex items-center"><i class="fa-solid fa-shield-check mr-2 text-brand-gold"></i> Verificaciones de Seguridad</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-envelope text-gray-400 text-xl"></i>
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-700">Correo Electrónico</p>
+                                        <p class="text-xs text-gray-500" id="settings-email">correo@ejemplo.com</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Pendiente</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-mobile-screen text-gray-400 text-xl"></i>
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-700">Teléfono Móvil</p>
+                                        <p class="text-xs text-gray-500">No verificado</p>
+                                    </div>
+                                </div>
+                                <button class="text-brand-gold text-xs font-bold hover:underline">Verificar SMS</button>
+                            </div>
                         </div>
-                </div>
-            </div>
-
-            <div id="view-wallet" class="view-section hidden max-w-6xl mx-auto space-y-8">
-                <h3 class="text-2xl font-serif font-bold text-brand-text mb-2">Mi Billetera</h3>
-                <div class="bg-white border border-gray-100 rounded-xl p-8 shadow-sm max-w-2xl">
-                    <p class="text-sm text-gray-400 font-medium uppercase mb-2">Balance Actual</p>
-                    <h3 id="saldo-wallet" class="text-4xl font-bold text-brand-text mb-8">$0.00</h3>
-                    <div class="flex gap-4 border-t border-gray-50 pt-8">
-                        <button class="btn-deposit flex-1 bg-brand-text text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800"><i class="fa-solid fa-plus mr-2"></i> Depositar</button>
                     </div>
-                </div>
-            </div>
 
-            <div id="view-scans" class="view-section hidden max-w-6xl mx-auto space-y-8">
-                <h3 class="text-2xl font-serif font-bold text-brand-text mb-2">Mis Escaneos</h3>
-                <div id="escaneos-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <div>
+                        <h4 class="font-bold mb-4 flex items-center"><i class="fa-solid fa-key mr-2 text-brand-gold"></i> Cambiar Contraseña</h4>
+                        <div class="max-w-md space-y-4">
+                            <input type="password" placeholder="Contraseña Actual" class="w-full px-4 py-3 rounded-lg bg-white border border-gray-200">
+                            <input type="password" placeholder="Nueva Contraseña" class="w-full px-4 py-3 rounded-lg bg-white border border-gray-200">
+                            <button class="bg-brand-text text-white px-6 py-3 rounded-lg font-bold text-sm w-full hover:bg-gray-800">Actualizar Contraseña</button>
+                        </div>
                     </div>
-            </div>
-
-            <div id="view-buy" class="view-section hidden max-w-6xl mx-auto space-y-8">
-                <h3 class="text-2xl font-serif font-bold text-brand-text mb-6">Comprar Boletos</h3>
-                <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm max-w-sm">
-                    <h4 class="font-bold text-xl mb-4">Powerball</h4>
-                    <button class="btn-play w-full bg-brand-text text-white py-3 rounded-lg text-sm font-semibold hover:bg-gray-800">Seleccionar Números</button>
                 </div>
             </div>
 
@@ -122,84 +115,42 @@
     </div>
 
     <script>
-        // --- INICIALIZACIÓN DE LA APP ---
         document.addEventListener('DOMContentLoaded', () => {
             const usuarioStr = localStorage.getItem('usuario');
-            if (!usuarioStr) {
-                window.location.href = '/login.html';
-                return;
-            }
+            if (!usuarioStr) { window.location.href = '/login.html'; return; }
             
             const usuario = JSON.parse(usuarioStr);
             
-            // 1. Configurar Textos e Iniciales
             document.getElementById('user-greeting-name').innerText = usuario.nombre;
-            document.getElementById('dropdown-name').innerText = usuario.nombre + " " + (usuario.apellido || '');
-            document.getElementById('dropdown-email').innerText = usuario.email;
-            document.getElementById('user-avatar').innerText = usuario.nombre.charAt(0).toUpperCase();
+            document.getElementById('settings-name').innerText = usuario.nombre + " " + (usuario.apellido || '');
+            document.getElementById('settings-email').innerText = usuario.email;
+            document.getElementById('settings-rol').innerText = usuario.rol;
+            
+            const inicial = usuario.nombre.charAt(0).toUpperCase();
+            document.getElementById('user-avatar').innerText = inicial;
+            document.getElementById('settings-avatar').innerText = inicial;
 
-            // 2. Configurar Fecha Real
-            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('header-date').innerText = new Date().toLocaleDateString('es-ES', dateOptions);
-
-            // 3. Configurar Saldos Reales (0.00 por defecto en registro)
             const saldoFormat = '$' + parseFloat(usuario.saldo || 0).toFixed(2);
             document.getElementById('saldo-principal').innerText = saldoFormat;
-            if(document.getElementById('saldo-wallet')) document.getElementById('saldo-wallet').innerText = saldoFormat;
+            document.getElementById('saldo-wallet').innerText = saldoFormat;
 
-            // 4. ANCLAR BOLETOS A LA REALIDAD (Vacío por defecto)
-            const boletosData = []; // Más adelante esto vendrá de la base de datos (fetch)
-            const escaneosData = []; 
-
-            const boletosContainer = document.getElementById('boletos-container');
-            const escaneosContainer = document.getElementById('escaneos-container');
-
-            if (boletosData.length === 0) {
-                boletosContainer.innerHTML = `<div class="bg-gray-50 border border-dashed border-gray-300 p-8 rounded-xl text-center col-span-full"><i class="fa-solid fa-ticket text-3xl text-gray-300 mb-3"></i><p class="text-gray-500 font-medium">Aún no tienes boletos activos.</p></div>`;
-            }
-
-            if (escaneosData.length === 0) {
-                escaneosContainer.innerHTML = `<div class="bg-gray-50 border border-dashed border-gray-300 p-8 rounded-xl text-center col-span-full"><i class="fa-solid fa-file-invoice text-3xl text-gray-300 mb-3"></i><p class="text-gray-500 font-medium">No hay escaneos disponibles en tu bóveda.</p></div>`;
-            }
-
-            // 5. VALIDACIÓN KYC: Bloquear si está pendiente
             if (usuario.estado_kyc === 'PENDIENTE') {
                 document.getElementById('kyc-banner').classList.remove('hidden');
-                
-                // Bloquear botones de depósito
-                document.querySelectorAll('.btn-deposit').forEach(btn => {
-                    btn.onclick = () => alert('⚠️ Acción Bloqueada: Tu identidad no ha sido verificada aún.');
-                    btn.classList.add('opacity-50', 'cursor-not-allowed');
-                });
-
-                // Bloquear botones de compra/jugar
-                document.querySelectorAll('.btn-play').forEach(btn => {
-                    btn.onclick = () => alert('⚠️ Acción Bloqueada: Tu identidad no ha sido verificada aún.');
-                    btn.classList.add('opacity-50', 'cursor-not-allowed');
-                });
             }
         });
 
-        // --- NAVEGACIÓN SPA ---
         function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById(viewId).classList.remove('hidden');
-            
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('bg-brand-goldLight', 'text-brand-gold');
                 link.classList.add('text-gray-500');
                 if (link.getAttribute('data-target') === viewId) {
-                    link.classList.remove('text-gray-500');
-                    link.classList.add('bg-brand-goldLight', 'text-brand-gold');
+                    link.classList.remove('text-gray-500'); link.classList.add('bg-brand-goldLight', 'text-brand-gold');
                 }
             });
         }
-
-        // --- CERRAR SESIÓN ---
-        function cerrarSesion() {
-            localStorage.removeItem('usuario');
-            window.location.href = '/login.html';
-        }
+        function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = '/login.html'; }
     </script>
 </body>
 </html>
