@@ -22,32 +22,33 @@ const pool = mysql.createPool(dbConfig);
 // 2. LA MAGIA: Ruta API para registrar usuarios
 app.post('/api/registro', async (req, res) => {
   try {
-    const { nombre, apellido, fecha_nacimiento, telefono, email, password } = req.body;
+    // Añadimos tipo_doc y num_doc
+    const { nombre, apellido, fecha_nacimiento, telefono, tipo_doc, num_doc, email, password } = req.body;
 
-    // Generar el código de cliente de 6 dígitos (Ej: 482910)
     const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Encriptar la contraseña
     const salt = await bcrypt.genSalt(10);
     const clave_hash = await bcrypt.hash(password, salt);
 
-    // Insertar el nuevo cliente en la tabla 'usuarios'
+    // Actualizamos el INSERT para incluir los nuevos campos
     const query = `
-      INSERT INTO usuarios (codigo, nombre, apellido, fecha_nacimiento, telefono, email, clave_hash)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO usuarios (codigo, nombre, apellido, fecha_nacimiento, telefono, tipo_documento, numero_documento, email, clave_hash)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
-    await pool.execute(query, [codigo, nombre, apellido, fecha_nacimiento, telefono, email, clave_hash]);
+    await pool.execute(query, [codigo, nombre, apellido, fecha_nacimiento, telefono, tipo_doc, num_doc, email, clave_hash]);
 
-    console.log(`✅ Nuevo usuario registrado exitosamente: ${email}`);
-    // Le respondemos al HTML que todo salió bien
+    console.log(`✅ Nuevo usuario registrado: ${email}`);
     res.status(201).json({ exito: true, mensaje: 'Usuario registrado exitosamente' });
 
   } catch (error) {
     console.error('❌ Error en registro:', error);
-    // Si el error es porque el correo ya existe en la base de datos
+    // Verificamos EXACTAMENTE qué se duplicó
     if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ exito: false, mensaje: 'El correo electrónico ya está registrado.' });
+      if (error.message.includes('email')) {
+        return res.status(400).json({ exito: false, mensaje: 'El correo electrónico ya está registrado.' });
+      } else if (error.message.includes('numero_documento')) {
+        return res.status(400).json({ exito: false, mensaje: 'Este documento de identidad ya está registrado.' });
+      }
     }
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
   }
