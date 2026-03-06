@@ -296,10 +296,71 @@
 
         // --- INYECCIÓN DE DATOS DE LA BASE ---
         document.addEventListener('DOMContentLoaded', () => {
-            const usuarioStr = localStorage.getItem('usuario');
+            const usuario = JSON.parse(localStorage.getItem('usuario'));
             if (!usuarioStr) { window.location.href = '/login.html'; return; }
             const usuario = JSON.parse(usuarioStr);
-            
+                
+    // Función para refrescar el saldo REAL desde la base de datos
+    fetch(`/api/usuario/${usuario.id}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.exito) {
+                localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                actualizarInterfaz(data.usuario);
+            }
+        });
+
+    // Cargar Sorteos Reales y Contadores
+    cargarSorteosReales();
+});
+
+function actualizarInterfaz(u) {
+    const saldoFormat = '$' + parseFloat(u.saldo || 0).toFixed(2);
+    document.getElementById('saldo-principal').innerText = saldoFormat;
+    document.getElementById('saldo-wallet').innerText = saldoFormat;
+    document.getElementById('user-greeting-name').innerText = u.nombre;
+}
+
+function cargarSorteosReales() {
+    fetch('/api/public/sorteos-activos')
+        .then(res => res.json())
+        .then(data => {
+            if(data.exito && data.sorteos.length > 0) {
+                // Actualizar la lista de sorteos (ej. Powerball)
+                data.sorteos.forEach(s => {
+                    // Aquí buscamos el elemento en el HTML y actualizamos premio y fecha
+                    // Por ejemplo, si es Powerball
+                    if(s.loteria === 'Powerball') {
+                        iniciarContadorReal(s.fecha_sorteo, 'countdown-powerball');
+                    }
+                });
+            }
+        });
+}
+
+function iniciarContadorReal(fechaDestino, elementId) {
+    const target = new Date(fechaDestino).getTime();
+    const el = document.getElementById(elementId);
+    if(!el) return;
+
+    const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const diff = target - now;
+
+        if (diff < 0) {
+            el.innerText = "CERRADO";
+            clearInterval(interval);
+            return;
+        }
+
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        el.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
             document.getElementById('user-greeting-name').innerText = usuario.nombre;
             document.getElementById('dropdown-name').innerText = usuario.nombre + " " + (usuario.apellido || '');
             document.getElementById('dropdown-email').innerText = usuario.email;

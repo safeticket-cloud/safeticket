@@ -68,65 +68,63 @@
                  </div>
             </div>
 
-            <div id="view-finanzas" class="admin-section hidden">
-                <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
-                    <div class="p-4 border-b flex justify-between items-center bg-gray-50">
-                        <h3 class="font-bold text-sm">Validación de Transacciones</h3>
-                    </div>
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider">
-                            <tr><th class="p-4">Fecha / ID</th><th class="p-4">Cliente</th><th class="p-4">Monto / Método</th><th class="p-4">Referencia</th><th class="p-4">Estado</th><th class="p-4 text-right">Acción</th></tr>
-                        </thead>
-                        <tbody id="tabla-finanzas" class="divide-y divide-gray-100">
-                            </tbody>
-                    </table>
-                </div>
+            <!-- Reemplaza la sección de view-finanzas en tu admin.html -->
+<div id="view-finanzas" class="admin-section hidden">
+    <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
+        <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+            <h3 class="font-bold text-sm">Tesorería</h3>
+            <div class="flex space-x-2">
+                <!-- Filtros dinámicos -->
+                <button onclick="cargarFinanzas('PENDIENTE')" class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-lg border border-yellow-200">Pendientes</button>
+                <button onclick="cargarFinanzas('TODOS')" class="px-3 py-1 bg-white text-gray-600 text-xs font-bold rounded-lg border hover:bg-gray-50">Todo el Historial</button>
             </div>
-
-            <div id="view-clientes" class="admin-section hidden">
-                <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider">
-                            <tr><th class="p-4">Cliente</th><th class="p-4">ID</th><th class="p-4">Balance</th><th class="p-4">Estatus KYC</th></tr>
-                        </thead>
-                        <tbody id="tabla-clientes" class="divide-y divide-gray-100"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="view-kyc" class="admin-section hidden">
-                <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Documento</th><th class="p-4 text-center">Ver ID</th><th class="p-4 text-right">Acción</th></tr></thead>
-                        <tbody id="tabla-kyc" class="divide-y divide-gray-100"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="view-sorteos" class="admin-section hidden space-y-6">
-                <div class="bg-brand-card rounded-xl shadow-sm border p-6 max-w-2xl">
-                    <h3 class="font-bold mb-4">Programar Nuevo Sorteo</h3>
-                    <form onsubmit="crearSorteo(event)" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Lotería</label><select id="s-juego" class="w-full p-2.5 border rounded" required><option value="1">Loto (Florida)</option><option value="2">Powerball</option></select></div>
-                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Premio Mayor (USD)</label><input type="number" id="s-premio" class="w-full p-2.5 border rounded" required></div>
-                        </div>
-                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Fecha y Hora de Cierre</label><input type="datetime-local" id="s-fecha" class="w-full p-2.5 border rounded" required></div>
-                        <button type="submit" class="bg-brand-text text-white px-6 py-3 rounded-lg hover:bg-gray-800 w-full font-bold">Crear Sorteo</button>
-                    </form>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><th class="p-4">Lotería</th><th class="p-4">Fecha Cierre</th><th class="p-4">Premio Mayor</th></thead>
-                        <tbody id="tabla-sorteos"></tbody>
-                    </table>
-                </div>
-            </div>
-
-        </main>
+        </div>
+        <table class="w-full text-left text-sm">
+            <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider">
+                <tr><th class="p-4">ID / Fecha</th><th class="p-4">Cliente</th><th class="p-4">Monto / Método</th><th class="p-4">Estado</th><th class="p-4 text-right">Acción</th></tr>
+            </thead>
+            <tbody id="tabla-finanzas" class="divide-y divide-gray-100"></tbody>
+        </table>
     </div>
+</div>
 
-    <script>
+<script>
+// Agrega o actualiza esta función en el script de admin.html
+function cargarFinanzas(estado = 'PENDIENTE') {
+    const tbody = document.getElementById('tabla-finanzas');
+    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400">Consultando base de datos...</td></tr>';
+    
+    fetch(`/api/admin/finanzas/lista?estado=${estado}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.exito && data.transacciones.length > 0) {
+                tbody.innerHTML = '';
+                data.transacciones.forEach(tx => {
+                    let badge = '';
+                    if(tx.estado === 'PENDIENTE') badge = '<span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Pendiente</span>';
+                    else if(tx.estado === 'APROBADO') badge = '<span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Aprobado</span>';
+                    else badge = '<span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Rechazado</span>';
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50 border-b border-gray-50">
+                            <td class="p-4"><p class="font-mono text-xs">#TX-${tx.id}</p><p class="text-[10px] text-gray-400">${tx.fecha_formato}</p></td>
+                            <td class="p-4"><p class="font-bold text-xs">${tx.nombre} ${tx.apellido}</p></td>
+                            <td class="p-4"><p class="font-bold text-green-600">$${parseFloat(tx.monto_usd).toFixed(2)}</p><p class="text-[9px] font-bold text-gray-400">${tx.metodo}</p></td>
+                            <td class="p-4">${badge}</td>
+                            <td class="p-4 text-right">
+                                ${tx.estado === 'PENDIENTE' ? `
+                                    <button onclick="procesarTransaccion(${tx.id}, 'APROBAR')" class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold hover:bg-green-600"><i class="fa-solid fa-check"></i></button>
+                                    <button onclick="procesarTransaccion(${tx.id}, 'RECHAZAR')" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold hover:bg-red-600"><i class="fa-solid fa-xmark"></i></button>
+                                ` : '<i class="fa-solid fa-lock text-gray-300"></i>'}
+                            </td>
+                        </tr>`;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400">No hay registros.</td></tr>';
+            }
+        });
+}
+
         let adminActual = null;
 
         document.addEventListener('DOMContentLoaded', () => {
