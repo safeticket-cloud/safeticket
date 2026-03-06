@@ -60,9 +60,15 @@
             .then(res => res.json())
             .then(data => {
                 if(data.exito) {
-                    // Guardamos los datos del usuario en el navegador para usarlos en el dashboard
+                    // Guardamos los datos del usuario en el navegador
                     localStorage.setItem('usuario', JSON.stringify(data.usuario));
-                    window.location.href = '/dashboard.html';
+                    
+                    // LA MAGIA: El sistema decide a dónde enviarte
+                    if (data.usuario.rol === 'ADMIN') {
+                        window.location.href = '/admin.html'; // Si eres Master, vas al panel
+                    } else {
+                        window.location.href = '/dashboard.html'; // Si eres cliente, a la bóveda
+                    }
                 } else {
                     alert('Error: ' + data.mensaje);
                     btn.innerText = "Acceder a mi Cuenta";
