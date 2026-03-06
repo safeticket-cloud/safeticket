@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeTicket | Panel Administrativo</title>
+    <title>SafeTicket | Panel Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,20 +16,18 @@
     <div id="modal-documento" class="hidden fixed inset-0 bg-gray-900/90 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl overflow-hidden max-w-3xl w-full shadow-2xl flex flex-col max-h-[90vh]">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-brand-text"><i class="fa-solid fa-id-card text-brand-gold mr-2"></i> Documento de Identidad</h3>
-                <button onclick="cerrarModalDoc()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="font-bold"><i class="fa-solid fa-id-card text-brand-gold mr-2"></i> Revisión de Identidad</h3>
+                <button onclick="document.getElementById('modal-documento').classList.add('hidden')" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="p-4 flex-1 overflow-auto flex justify-center bg-gray-200">
                 <img id="img-documento" src="" alt="Documento" class="max-w-full object-contain shadow-sm">
             </div>
-            <div class="p-4 border-t border-gray-100 flex justify-between items-center bg-white">
-                <div class="text-sm">
+            <div class="p-4 flex justify-between items-center bg-white border-t">
+                <div>
                     <p class="font-bold text-gray-800" id="doc-user-name">Nombre</p>
-                    <p class="text-gray-500" id="doc-user-id">V-123456</p>
+                    <p class="text-gray-500 text-sm" id="doc-user-id">ID</p>
                 </div>
-                <button id="btn-aprobar-modal" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 shadow-sm transition-colors">
-                    <i class="fa-solid fa-check mr-2"></i> Aprobar Cliente
-                </button>
+                <button id="btn-aprobar-modal" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 shadow-sm">Aprobar Cliente</button>
             </div>
         </div>
     </div>
@@ -39,89 +37,148 @@
             <i class="fa-solid fa-ticket text-brand-gold text-xl mr-2"></i>
             <span class="font-serif text-xl font-bold text-white">Safe<span class="text-brand-gold">Admin</span></span>
         </div>
-
         <div class="px-6 py-4 border-b border-gray-800 flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-white font-bold" id="admin-avatar">A</div>
+            <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-white font-bold" id="admin-avatar">M</div>
             <div>
-                <p class="text-sm font-bold text-white" id="admin-name">Cargando...</p>
-                <p class="text-xs text-brand-gold" id="admin-role">MASTER</p>
+                <p class="text-sm font-bold text-white truncate w-32" id="admin-name">Master</p>
+                <p class="text-[10px] text-brand-gold" id="admin-role">MASTER ADMIN</p>
             </div>
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-4">Operaciones</div>
-            <a href="#" onclick="switchAdminView('view-dashboard', this)" class="admin-nav-link flex items-center space-x-3 px-3 py-2.5 bg-brand-gold/10 text-brand-gold rounded-lg"><i class="fa-solid fa-chart-line w-5"></i><span>Panel Principal</span></a>
-            <a href="#" onclick="switchAdminView('view-kyc', this); cargarPendientesKYC();" class="admin-nav-link flex items-center space-x-3 px-3 py-2.5 hover:bg-gray-800 rounded-lg transition-colors"><i class="fa-solid fa-id-card w-5"></i><span>Validaciones (KYC)</span> <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full shadow-sm" id="badge-kyc">0</span></a>
-            <a href="#" class="admin-nav-link flex items-center space-x-3 px-3 py-2.5 hover:bg-gray-800 rounded-lg transition-colors"><i class="fa-solid fa-file-arrow-up w-5"></i><span>Subir Boletos</span></a>
+            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-2">Principal</p>
+            <a href="#" onclick="switchAdminView('view-dashboard', this)" class="admin-nav-link flex items-center px-3 py-2.5 bg-brand-gold/10 text-brand-gold rounded-lg"><i class="fa-solid fa-chart-line w-6"></i><span>Dashboard</span></a>
             
-            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-6">Finanzas</div>
-            <a href="#" class="admin-nav-link flex items-center space-x-3 px-3 py-2.5 hover:bg-gray-800 rounded-lg transition-colors"><i class="fa-solid fa-money-bill-transfer w-5"></i><span>Depósitos</span></a>
+            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-4">Operaciones</p>
+            <a href="#" onclick="switchAdminView('view-kyc', this); cargarPendientesKYC();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-id-card w-6"></i><span>Validaciones (KYC)</span> <span class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full" id="badge-kyc">0</span></a>
+            <a href="#" onclick="switchAdminView('view-sorteos', this); cargarSorteos();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-calendar-star w-6"></i><span>Prog. Sorteos</span></a>
+            <a href="#" onclick="switchAdminView('view-boletos', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-ticket w-6"></i><span>Control Boletos</span></a>
+            
+            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-4">Gestión</p>
+            <a href="#" onclick="switchAdminView('view-clientes', this); cargarClientes();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-users w-6"></i><span>Base Clientes</span></a>
+            <a href="#" onclick="switchAdminView('view-staff', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg" id="menu-staff"><i class="fa-solid fa-user-shield w-6"></i><span>Crear Staff</span></a>
         </nav>
         
         <div class="p-4 border-t border-gray-800">
-            <button onclick="cerrarSesionAdmin()" class="w-full flex items-center justify-center space-x-2 bg-gray-800 hover:bg-red-900/50 text-gray-400 hover:text-red-400 px-4 py-2.5 rounded-lg transition-colors">
-                <i class="fa-solid fa-power-off"></i><span>Salir del Sistema</span>
-            </button>
+            <button onclick="cerrarSesionAdmin()" class="w-full flex items-center justify-center bg-gray-800 hover:bg-red-900/50 text-gray-400 hover:text-red-400 py-2.5 rounded-lg transition-colors"><i class="fa-solid fa-power-off mr-2"></i><span>Salir</span></button>
         </div>
     </aside>
 
     <div class="flex-1 flex flex-col h-full overflow-hidden">
-        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-10">
+        <header class="h-20 bg-white border-b flex items-center justify-between px-8 shadow-sm">
             <h2 class="text-xl font-bold text-brand-text" id="header-title">Panel Principal de Control</h2>
-            <button class="text-gray-400 hover:text-brand-gold"><i class="fa-solid fa-arrows-rotate text-xl" onclick="location.reload()"></i></button>
+            <button class="text-gray-400 hover:text-brand-gold" onclick="location.reload()" title="Refrescar Datos"><i class="fa-solid fa-arrows-rotate text-xl"></i></button>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-8 relative bg-brand-bg">
+        <main class="flex-1 overflow-y-auto p-8 relative">
             
             <div id="view-dashboard" class="admin-section">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">Total Clientes</p>
-                            <h3 class="text-2xl font-bold" id="stat-clientes">0</h3>
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border p-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-lg flex justify-center items-center text-xl"><i class="fa-solid fa-users"></i></div>
+                        <div><p class="text-sm text-gray-500">Total Clientes</p><h3 class="text-2xl font-bold" id="stat-clientes">0</h3></div>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4 cursor-pointer hover:border-brand-gold transition-colors" onclick="switchAdminView('view-kyc', document.querySelectorAll('.admin-nav-link')[1]); cargarPendientesKYC();">
-                        <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-id-card-clip"></i></div>
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">KYC Pendientes</p>
-                            <h3 class="text-2xl font-bold text-yellow-600" id="stat-kyc">0</h3>
-                        </div>
+                    <div class="bg-white rounded-xl shadow-sm border p-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-lg flex justify-center items-center text-xl"><i class="fa-solid fa-id-card-clip"></i></div>
+                        <div><p class="text-sm text-gray-500">KYC Pendientes</p><h3 class="text-2xl font-bold text-yellow-600" id="stat-kyc">0</h3></div>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-green-50 text-green-500 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-money-check-dollar"></i></div>
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">Depósitos de Hoy</p>
-                            <h3 class="text-2xl font-bold">$0.00</h3>
-                        </div>
+                    <div class="bg-white rounded-xl shadow-sm border p-6 flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-lg flex justify-center items-center text-xl"><i class="fa-solid fa-ticket"></i></div>
+                        <div><p class="text-sm text-gray-500">Boletos por Comprar</p><h3 class="text-2xl font-bold">0</h3></div>
                     </div>
                 </div>
             </div>
 
             <div id="view-kyc" class="admin-section hidden">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                        <h3 class="font-bold text-gray-800"><i class="fa-solid fa-user-clock text-brand-gold mr-2"></i> Clientes esperando validación de identidad</h3>
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <div class="p-5 border-b bg-gray-50 font-bold"><i class="fa-solid fa-user-clock text-brand-gold mr-2"></i> Validaciones Pendientes</div>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><th class="p-4">Cliente</th><th class="p-4">Documento</th><th class="p-4 text-center">Ver ID</th><th class="p-4 text-right">Acción</th></thead>
+                        <tbody id="tabla-kyc"><tr><td colspan="4" class="p-6 text-center text-gray-400">Cargando...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-clientes" class="admin-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <div class="p-5 border-b bg-gray-50 font-bold flex justify-between">
+                        <span><i class="fa-solid fa-users text-brand-gold mr-2"></i> Base de Clientes Activos</span>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                                    <th class="p-4 border-b border-gray-100 font-semibold">Cliente</th>
-                                    <th class="p-4 border-b border-gray-100 font-semibold">Contacto</th>
-                                    <th class="p-4 border-b border-gray-100 font-semibold">Identificación</th>
-                                    <th class="p-4 border-b border-gray-100 font-semibold text-center">Documento</th>
-                                    <th class="p-4 border-b border-gray-100 font-semibold text-right">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabla-kyc" class="text-sm">
-                                <tr>
-                                    <td colspan="5" class="p-8 text-center text-gray-400">Cargando datos...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><th class="p-4">Cliente</th><th class="p-4">Registro</th><th class="p-4">Estatus KYC</th><th class="p-4">Billetera</th></thead>
+                        <tbody id="tabla-clientes"><tr><td colspan="4" class="p-6 text-center text-gray-400">Cargando...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-sorteos" class="admin-section hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border p-6 max-w-2xl">
+                    <h3 class="font-bold mb-4"><i class="fa-solid fa-calendar-plus text-brand-gold mr-2"></i> Programar Nuevo Sorteo</h3>
+                    <form id="form-sorteo" onsubmit="crearSorteo(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Lotería</label>
+                                <select id="s-juego" class="w-full p-2 border rounded" required><option value="1">Loto (Florida)</option><option value="2">Powerball</option></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Premio Mayor (USD)</label>
+                                <input type="number" id="s-premio" class="w-full p-2 border rounded" placeholder="Ej. 420000000" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Fecha y Hora de Cierre</label>
+                            <input type="datetime-local" id="s-fecha" class="w-full p-2 border rounded" required>
+                        </div>
+                        <button type="submit" class="bg-brand-text text-white px-6 py-2 rounded hover:bg-gray-800 w-full font-bold">Crear Sorteo y Activar Contador</button>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <div class="p-5 border-b bg-gray-50 font-bold"><i class="fa-solid fa-list text-brand-gold mr-2"></i> Sorteos Programados</div>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><th class="p-4">Lotería</th><th class="p-4">Fecha Cierre</th><th class="p-4">Premio Mayor</th></thead>
+                        <tbody id="tabla-sorteos"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-staff" class="admin-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 max-w-lg mx-auto mt-10">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex justify-center items-center text-2xl mx-auto mb-3"><i class="fa-solid fa-user-shield"></i></div>
+                        <h3 class="font-bold text-xl">Añadir Nuevo Administrador</h3>
+                        <p class="text-xs text-gray-500">Otorga accesos para el equipo de trabajo.</p>
                     </div>
+                    <form onsubmit="crearStaff(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Nombre del Empleado</label>
+                            <input type="text" id="st-nombre" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Correo Institucional</label>
+                            <input type="email" id="st-email" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none" placeholder="@safeticket.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Asignar Rol</label>
+                            <select id="st-rol" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none">
+                                <option value="USUARIO">Operador (Sube boletos y aprueba KYC)</option>
+                                <option value="ADMIN">Master (Control Total)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Contraseña de Acceso</label>
+                            <input type="password" id="st-pass" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none" required>
+                        </div>
+                        <button type="submit" id="btn-staff" class="w-full bg-brand-gold text-white py-3 rounded-lg font-bold hover:bg-yellow-600 mt-2">Registrar Usuario</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="view-boletos" class="admin-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-12 text-center text-gray-400">
+                    <i class="fa-solid fa-hammer text-4xl mb-4 text-gray-300"></i>
+                    <h3 class="text-xl font-bold text-gray-600">Módulo en Desarrollo</h3>
+                    <p>Aquí verás todos los boletos comprados por los usuarios listos para subirles la foto.</p>
                 </div>
             </div>
 
@@ -131,22 +188,21 @@
     <script>
         let adminActual = null;
 
-        // --- INICIALIZACIÓN (CANDADO DE SEGURIDAD) ---
+        // --- SEGURIDAD AL CARGAR ---
         document.addEventListener('DOMContentLoaded', () => {
             const usuarioStr = localStorage.getItem('usuario');
             if (!usuarioStr) { window.location.href = '/login.html'; return; }
             
             adminActual = JSON.parse(usuarioStr);
-            
-            if (adminActual.rol !== 'ADMIN') {
-                alert('Acceso Denegado. Redirigiendo a tu bóveda.');
-                window.location.href = '/dashboard.html';
-                return;
-            }
+            if (adminActual.rol === 'CLIENTE') { window.location.href = '/dashboard.html'; return; }
 
             document.getElementById('admin-name').innerText = adminActual.nombre;
             document.getElementById('admin-avatar').innerText = adminActual.nombre.charAt(0).toUpperCase();
-            
+            document.getElementById('admin-role').innerText = adminActual.rol;
+
+            // Ocultar opción "Crear Staff" si no es Master
+            if(adminActual.rol !== 'ADMIN') document.getElementById('menu-staff').classList.add('hidden');
+
             actualizarEstadisticas();
         });
 
@@ -155,135 +211,113 @@
             document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
             document.getElementById(viewId).classList.remove('hidden');
             
-            document.querySelectorAll('.admin-nav-link').forEach(link => {
-                link.classList.remove('bg-brand-gold/10', 'text-brand-gold');
-                link.classList.add('hover:bg-gray-800');
-            });
-            if(element) {
-                element.classList.remove('hover:bg-gray-800');
-                element.classList.add('bg-brand-gold/10', 'text-brand-gold');
-            }
+            document.querySelectorAll('.admin-nav-link').forEach(link => { link.classList.remove('bg-brand-gold/10', 'text-brand-gold'); link.classList.add('hover:bg-gray-800'); });
+            if(element) { element.classList.remove('hover:bg-gray-800'); element.classList.add('bg-brand-gold/10', 'text-brand-gold'); }
 
-            const titles = {
-                'view-dashboard': 'Panel Principal de Control',
-                'view-kyc': 'Gestión de Validaciones (KYC)'
-            };
+            const titles = { 'view-dashboard':'Panel Principal', 'view-kyc':'Validaciones de Identidad', 'view-clientes':'Base de Clientes', 'view-sorteos':'Programación de Sorteos', 'view-staff':'Gestión de Equipo', 'view-boletos':'Control de Boletos' };
             document.getElementById('header-title').innerText = titles[viewId] || '';
         }
 
-        // --- FUNCIONES DE BASE DE DATOS ---
+        // --- CONEXIONES CON BACKEND (APIs) ---
         function actualizarEstadisticas() {
-            fetch('/api/admin/stats')
-                .then(res => res.json())
-                .then(data => {
-                    if(data.exito) {
-                        document.getElementById('stat-clientes').innerText = data.total_clientes;
-                        document.getElementById('stat-kyc').innerText = data.kyc_pendientes;
-                        document.getElementById('badge-kyc').innerText = data.kyc_pendientes;
-                    }
-                });
+            fetch('/api/admin/stats').then(res => res.json()).then(data => {
+                if(data.exito) {
+                    document.getElementById('stat-clientes').innerText = data.total_clientes;
+                    document.getElementById('stat-kyc').innerText = data.kyc_pendientes;
+                    document.getElementById('badge-kyc').innerText = data.kyc_pendientes;
+                }
+            });
         }
 
         function cargarPendientesKYC() {
             const tbody = document.getElementById('tabla-kyc');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Buscando solicitudes...</td></tr>';
-            
-            fetch('/api/admin/kyc-pendientes')
-                .then(res => res.json())
-                .then(data => {
-                    if(data.exito && data.usuarios.length > 0) {
-                        tbody.innerHTML = '';
-                        data.usuarios.forEach(user => {
-                            const tr = document.createElement('tr');
-                            tr.className = "hover:bg-gray-50 transition-colors border-b border-gray-50";
-                            // Protegemos la ruta de la imagen en caso de que esté vacía
-                            const urlImagen = user.documento_url ? `'${user.documento_url}'` : 'null';
-                            
-                            tr.innerHTML = `
-                                <td class="p-4">
-                                    <p class="font-bold text-gray-800">${user.nombre} ${user.apellido}</p>
-                                    <p class="text-xs text-gray-400">Reg: ${user.fecha}</p>
-                                </td>
-                                <td class="p-4">
-                                    <p class="text-gray-600">${user.email}</p>
-                                    <p class="text-gray-500 text-xs">${user.telefono || 'Sin teléfono'}</p>
-                                </td>
-                                <td class="p-4">
-                                    <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase">${user.tipo_documento}</span>
-                                    <p class="font-mono text-gray-800 mt-1">${user.numero_documento}</p>
-                                </td>
-                                <td class="p-4 text-center">
-                                    <button onclick="verDocumento(${urlImagen}, '${user.nombre} ${user.apellido}', '${user.numero_documento}', ${user.id})" class="text-brand-gold hover:text-brand-goldHover p-2 bg-brand-goldLight rounded-lg transition-colors">
-                                        <i class="fa-solid fa-image"></i>
-                                    </button>
-                                </td>
-                                <td class="p-4 text-right">
-                                    <button onclick="aprobarUsuario(${user.id})" class="bg-green-500 text-white px-4 py-2 rounded font-bold text-xs hover:bg-green-600 shadow-sm transition-colors">
-                                        Aprobar
-                                    </button>
-                                </td>
-                            `;
-                            tbody.appendChild(tr);
-                        });
-                    } else {
-                        tbody.innerHTML = '<tr><td colspan="5" class="p-12 text-center text-gray-400"><i class="fa-solid fa-check-circle text-4xl text-green-200 mb-3 block"></i>No hay validaciones pendientes. ¡Todo al día!</td></tr>';
-                    }
-                })
-                .catch(err => {
-                    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-400">Error cargando los datos.</td></tr>';
-                });
+            fetch('/api/admin/kyc-pendientes').then(res => res.json()).then(data => {
+                if(data.exito && data.usuarios.length > 0) {
+                    tbody.innerHTML = '';
+                    data.usuarios.forEach(user => {
+                        const urlImg = user.documento_url ? `'${user.documento_url}'` : 'null';
+                        tbody.innerHTML += `
+                            <tr class="border-b">
+                                <td class="p-4"><p class="font-bold">${user.nombre} ${user.apellido}</p><p class="text-xs text-gray-500">${user.email}</p></td>
+                                <td class="p-4"><span class="text-xs font-bold bg-gray-100 px-2 py-1 rounded">${user.tipo_documento}</span><p class="mt-1">${user.numero_documento}</p></td>
+                                <td class="p-4 text-center"><button onclick="verDocumento(${urlImg}, '${user.nombre}', '${user.numero_documento}', ${user.id})" class="text-brand-gold p-2 bg-brand-goldLight rounded hover:bg-yellow-200"><i class="fa-solid fa-image"></i></button></td>
+                                <td class="p-4 text-right"><button onclick="aprobarUsuario(${user.id})" class="bg-green-500 text-white px-4 py-1.5 rounded text-xs font-bold hover:bg-green-600">Aprobar</button></td>
+                            </tr>`;
+                    });
+                } else tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-400">No hay validaciones pendientes.</td></tr>';
+            });
         }
 
-        // --- LÓGICA DEL MODAL Y APROBACIÓN ---
-        function verDocumento(url, nombre, documento, idUsuario) {
-            if(!url) {
-                alert('Este usuario no subió una imagen válida.');
-                return;
-            }
+        function cargarClientes() {
+            const tbody = document.getElementById('tabla-clientes');
+            fetch('/api/admin/clientes').then(res => res.json()).then(data => {
+                if(data.exito && data.clientes.length > 0) {
+                    tbody.innerHTML = '';
+                    data.clientes.forEach(c => {
+                        let badge = c.estado_kyc === 'APROBADO' ? '<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-bold">Aprobado</span>' : '<span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded font-bold">Pendiente</span>';
+                        tbody.innerHTML += `
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4"><p class="font-bold text-gray-800">${c.nombre} ${c.apellido || ''}</p><p class="text-xs text-gray-500">${c.email}</p></td>
+                                <td class="p-4 text-gray-600">${c.fecha}</td>
+                                <td class="p-4">${badge}</td>
+                                <td class="p-4 font-bold text-green-600">$${parseFloat(c.saldo_disponible).toFixed(2)}</td>
+                            </tr>`;
+                    });
+                }
+            });
+        }
+
+        // --- CREACIÓN DE STAFF ---
+        function crearStaff(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-staff');
+            btn.innerText = "Registrando..."; btn.disabled = true;
+            const data = { nombre: document.getElementById('st-nombre').value, email: document.getElementById('st-email').value, rol: document.getElementById('st-rol').value, password: document.getElementById('st-pass').value };
+            
+            fetch('/api/admin/crear-staff', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
+            .then(res => res.json()).then(res => {
+                alert(res.mensaje); btn.innerText = "Registrar Usuario"; btn.disabled = false;
+                if(res.exito) e.target.reset();
+            });
+        }
+
+        // --- GESTIÓN DE SORTEOS ---
+        function cargarSorteos() {
+            fetch('/api/admin/sorteos').then(res => res.json()).then(data => {
+                const tbody = document.getElementById('tabla-sorteos');
+                tbody.innerHTML = '';
+                if(data.exito) {
+                    data.sorteos.forEach(s => {
+                        tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold">${s.loteria}</td><td class="p-4">${s.fecha.replace('T', ' ')}</td><td class="p-4 text-green-600 font-bold">$${Number(s.premio_mayor).toLocaleString()}</td></tr>`;
+                    });
+                }
+            });
+        }
+
+        function crearSorteo(e) {
+            e.preventDefault();
+            const data = { juego_id: document.getElementById('s-juego').value, fecha_sorteo: document.getElementById('s-fecha').value, premio_mayor: document.getElementById('s-premio').value };
+            fetch('/api/admin/crear-sorteo', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
+            .then(res => res.json()).then(res => { alert(res.mensaje); if(res.exito) { e.target.reset(); cargarSorteos(); } });
+        }
+
+        // --- LÓGICA MODAL KYC ---
+        function verDocumento(url, nombre, doc, id) {
+            if(!url) return alert('El usuario no subió imagen.');
             document.getElementById('img-documento').src = url;
             document.getElementById('doc-user-name').innerText = nombre;
-            document.getElementById('doc-user-id').innerText = documento;
-            
-            // Asignamos el ID al botón de aprobar del modal
-            const btnAprobar = document.getElementById('btn-aprobar-modal');
-            btnAprobar.onclick = function() {
-                aprobarUsuario(idUsuario);
-                cerrarModalDoc();
-            };
-            
+            document.getElementById('doc-user-id').innerText = "Doc: " + doc;
+            document.getElementById('btn-aprobar-modal').onclick = () => { aprobarUsuario(id); document.getElementById('modal-documento').classList.add('hidden'); };
             document.getElementById('modal-documento').classList.remove('hidden');
         }
 
-        function cerrarModalDoc() {
-            document.getElementById('modal-documento').classList.add('hidden');
-            document.getElementById('img-documento').src = '';
+        function aprobarUsuario(id) {
+            if(!confirm('¿Aprobar identidad?')) return;
+            fetch('/api/admin/aprobar-kyc', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({usuario_id: id, admin_id: adminActual.id}) })
+            .then(res => res.json()).then(data => { alert(data.mensaje); cargarPendientesKYC(); actualizarEstadisticas(); });
         }
 
-        function aprobarUsuario(usuario_id) {
-            if(!confirm('¿Estás seguro de que los datos son reales y deseas aprobar a este cliente?')) return;
-
-            fetch('/api/admin/aprobar-kyc', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario_id: usuario_id, admin_id: adminActual.id })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.exito) {
-                    alert(data.mensaje);
-                    cargarPendientesKYC(); // Recargar la tabla
-                    actualizarEstadisticas(); // Bajar el contador
-                } else {
-                    alert('Error: ' + data.mensaje);
-                }
-            })
-            .catch(err => alert('Error de conexión con el servidor.'));
-        }
-
-        function cerrarSesionAdmin() {
-            localStorage.removeItem('usuario');
-            window.location.href = '/login.html';
-        }
+        function cerrarSesionAdmin() { localStorage.removeItem('usuario'); window.location.href = '/login.html'; }
     </script>
 </body>
 </html>
