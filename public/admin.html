@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeTicket | Panel Master</title>
+    <title>SafeTicket | Panel CRM Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        tailwind.config = { theme: { extend: { colors: { brand: { bg: '#F1F5F9', text: '#0F172A', gold: '#C9A227', adminSide: '#0F172A' } } } } }
+        tailwind.config = { theme: { extend: { colors: { brand: { bg: '#F8FAFC', text: '#0F172A', gold: '#C9A227', adminSide: '#0F172A', card: '#FFFFFF' } } } } }
     </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        .animate-pulse-fast { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
 </head>
 <body class="bg-brand-bg text-brand-text font-sans antialiased h-screen overflow-hidden flex">
 
@@ -32,153 +38,276 @@
         </div>
     </div>
 
-    <aside class="w-64 bg-brand-adminSide text-gray-300 flex flex-col h-full z-20 shadow-xl">
+    <aside class="w-64 bg-brand-adminSide text-gray-300 flex flex-col h-full z-20 shadow-xl flex-shrink-0">
         <div class="h-20 flex items-center px-6 border-b border-gray-800 bg-gray-900">
-            <i class="fa-solid fa-ticket text-brand-gold text-xl mr-2"></i>
-            <span class="font-serif text-xl font-bold text-white">Safe<span class="text-brand-gold">Admin</span></span>
+            <i class="fa-solid fa-user-tie text-brand-gold text-xl mr-2"></i>
+            <span class="font-serif text-xl font-bold text-white">Safe<span class="text-brand-gold">Master</span></span>
         </div>
-        <div class="px-6 py-4 border-b border-gray-800 flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-white font-bold" id="admin-avatar">M</div>
-            <div>
-                <p class="text-sm font-bold text-white truncate w-32" id="admin-name">Master</p>
-                <p class="text-[10px] text-brand-gold" id="admin-role">MASTER ADMIN</p>
-            </div>
-        </div>
-
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-2">Principal</p>
-            <a href="#" onclick="switchAdminView('view-dashboard', this)" class="admin-nav-link flex items-center px-3 py-2.5 bg-brand-gold/10 text-brand-gold rounded-lg"><i class="fa-solid fa-chart-line w-6"></i><span>Dashboard</span></a>
+        
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-2">Visión General</p>
+            <a href="#" onclick="switchAdminView('view-dashboard', this)" class="admin-nav-link flex items-center px-3 py-2.5 bg-brand-gold/10 text-brand-gold rounded-lg font-medium transition-colors"><i class="fa-solid fa-chart-pie w-6"></i><span>Dashboard</span></a>
             
-            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-4">Operaciones</p>
-            <a href="#" onclick="switchAdminView('view-kyc', this); cargarPendientesKYC();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-id-card w-6"></i><span>Validaciones (KYC)</span> <span class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full" id="badge-kyc">0</span></a>
-            <a href="#" onclick="switchAdminView('view-sorteos', this); cargarSorteos();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-calendar-star w-6"></i><span>Prog. Sorteos</span></a>
-            <a href="#" onclick="switchAdminView('view-boletos', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-ticket w-6"></i><span>Control Boletos</span></a>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-6">Operativa</p>
+            <a href="#" onclick="switchAdminView('view-boletos', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg font-medium transition-colors"><i class="fa-solid fa-ticket w-6"></i><span>Gestión Boletos</span> <span class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">12</span></a>
+            <a href="#" onclick="switchAdminView('view-sorteos', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg font-medium transition-colors"><i class="fa-solid fa-calendar-star w-6"></i><span>Sorteos y Cierres</span></a>
             
-            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-4">Gestión</p>
-            <a href="#" onclick="switchAdminView('view-clientes', this); cargarClientes();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg"><i class="fa-solid fa-users w-6"></i><span>Base Clientes</span></a>
-            <a href="#" onclick="switchAdminView('view-staff', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg" id="menu-staff"><i class="fa-solid fa-user-shield w-6"></i><span>Crear Staff</span></a>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-6">Tesorería & KYC</p>
+            <a href="#" onclick="switchAdminView('view-finanzas', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg font-medium transition-colors"><i class="fa-solid fa-money-bill-transfer w-6"></i><span>Depósitos / Retiros</span> <span class="ml-auto bg-yellow-500 text-white text-[10px] px-2 py-0.5 rounded-full">5</span></a>
+            <a href="#" onclick="switchAdminView('view-kyc', this); cargarPendientesKYC();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg font-medium transition-colors"><i class="fa-solid fa-id-card-clip w-6"></i><span>Validaciones KYC</span></a>
+            
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 px-3 mt-6">Administración</p>
+            <a href="#" onclick="switchAdminView('view-clientes', this); cargarClientes();" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg font-medium transition-colors"><i class="fa-solid fa-users w-6"></i><span>Base de Clientes</span></a>
+            <a href="#" onclick="switchAdminView('view-config', this)" class="admin-nav-link flex items-center px-3 py-2.5 hover:bg-gray-800 rounded-lg font-medium transition-colors"><i class="fa-solid fa-gear w-6"></i><span>Config. Sistema</span></a>
         </nav>
         
-        <div class="p-4 border-t border-gray-800">
-            <button onclick="cerrarSesionAdmin()" class="w-full flex items-center justify-center bg-gray-800 hover:bg-red-900/50 text-gray-400 hover:text-red-400 py-2.5 rounded-lg transition-colors"><i class="fa-solid fa-power-off mr-2"></i><span>Salir</span></button>
+        <div class="p-4 border-t border-gray-800 bg-gray-900">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-8 h-8 rounded-full bg-brand-gold flex items-center justify-center text-white font-bold text-xs" id="admin-avatar">M</div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-white truncate" id="admin-name">Master</p>
+                    <p class="text-[9px] text-green-400"><i class="fa-solid fa-circle text-[6px] animate-pulse"></i> En línea</p>
+                </div>
+            </div>
+            <button onclick="cerrarSesionAdmin()" class="w-full flex items-center justify-center bg-gray-800 hover:bg-red-900/50 text-gray-400 hover:text-red-400 py-2 rounded transition-colors text-sm"><i class="fa-solid fa-power-off mr-2"></i>Salir</button>
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col h-full overflow-hidden">
-        <header class="h-20 bg-white border-b flex items-center justify-between px-8 shadow-sm">
-            <h2 class="text-xl font-bold text-brand-text" id="header-title">Panel Principal de Control</h2>
-            <button class="text-gray-400 hover:text-brand-gold" onclick="location.reload()" title="Refrescar Datos"><i class="fa-solid fa-arrows-rotate text-xl"></i></button>
+    <div class="flex-1 flex flex-col h-full overflow-hidden bg-brand-bg">
+        
+        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-10">
+            <h2 class="text-2xl font-bold text-brand-text" id="header-title">Dashboard General</h2>
+            
+            <div class="flex items-center space-x-6">
+                <div class="relative cursor-pointer group">
+                    <i class="fa-solid fa-bell text-xl text-gray-400 group-hover:text-brand-gold transition-colors"></i>
+                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    
+                    <div class="hidden group-hover:block absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+                        <div class="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
+                            <h4 class="font-bold text-sm">Notificaciones</h4>
+                            <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">3 Nuevas</span>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto custom-scrollbar">
+                            <div class="p-3 border-b hover:bg-gray-50 flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded bg-blue-100 text-blue-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-ticket"></i></div>
+                                <div><p class="text-xs font-bold">Nueva Compra</p><p class="text-[10px] text-gray-500">Juan Pérez compró 5 líneas PB.</p><p class="text-[9px] text-gray-400 mt-1">Hace 2 min</p></div>
+                            </div>
+                            <div class="p-3 border-b hover:bg-gray-50 flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                                <div><p class="text-xs font-bold">Depósito Zelle</p><p class="text-[10px] text-gray-500">María G. reportó $50.00</p><p class="text-[9px] text-gray-400 mt-1">Hace 15 min</p></div>
+                            </div>
+                            <div class="p-3 hover:bg-gray-50 flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded bg-yellow-100 text-yellow-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-id-card"></i></div>
+                                <div><p class="text-xs font-bold">KYC Pendiente</p><p class="text-[10px] text-gray-500">Carlos A. subió su pasaporte.</p><p class="text-[9px] text-gray-400 mt-1">Hace 1 hora</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-brand-gold bg-gray-50 p-2 rounded-lg" onclick="location.reload()" title="Refrescar Sistema"><i class="fa-solid fa-arrows-rotate"></i></button>
+            </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-8 relative">
+        <main class="flex-1 overflow-y-auto p-6 md:p-8 relative custom-scrollbar">
             
-            <div id="view-dashboard" class="admin-section">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-xl shadow-sm border p-6 flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-lg flex justify-center items-center text-xl"><i class="fa-solid fa-users"></i></div>
-                        <div><p class="text-sm text-gray-500">Total Clientes</p><h3 class="text-2xl font-bold" id="stat-clientes">0</h3></div>
+            <div id="view-dashboard" class="admin-section space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-brand-card rounded-xl shadow-sm border border-gray-100 p-5 flex items-center space-x-4 border-l-4 border-l-red-500">
+                        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex justify-center items-center text-xl shrink-0"><i class="fa-solid fa-cart-shopping"></i></div>
+                        <div><p class="text-xs text-gray-500 font-bold uppercase">Boletos X Comprar</p><h3 class="text-2xl font-bold text-gray-800">12</h3></div>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border p-6 flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-lg flex justify-center items-center text-xl"><i class="fa-solid fa-id-card-clip"></i></div>
-                        <div><p class="text-sm text-gray-500">KYC Pendientes</p><h3 class="text-2xl font-bold text-yellow-600" id="stat-kyc">0</h3></div>
+                    <div class="bg-brand-card rounded-xl shadow-sm border border-gray-100 p-5 flex items-center space-x-4 border-l-4 border-l-yellow-500">
+                        <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-full flex justify-center items-center text-xl shrink-0"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div><p class="text-xs text-gray-500 font-bold uppercase">Depósitos Pend.</p><h3 class="text-2xl font-bold text-gray-800">5</h3></div>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border p-6 flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-lg flex justify-center items-center text-xl"><i class="fa-solid fa-ticket"></i></div>
-                        <div><p class="text-sm text-gray-500">Boletos por Comprar</p><h3 class="text-2xl font-bold">0</h3></div>
+                    <div class="bg-brand-card rounded-xl shadow-sm border border-gray-100 p-5 flex items-center space-x-4 border-l-4 border-l-green-500">
+                        <div class="w-12 h-12 bg-green-50 text-green-500 rounded-full flex justify-center items-center text-xl shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div><p class="text-xs text-gray-500 font-bold uppercase">Boletos en Custodia</p><h3 class="text-2xl font-bold text-gray-800">1,204</h3></div>
+                    </div>
+                    <div class="bg-brand-card rounded-xl shadow-sm border border-gray-100 p-5 flex items-center space-x-4 border-l-4 border-l-blue-500">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex justify-center items-center text-xl shrink-0"><i class="fa-solid fa-users"></i></div>
+                        <div><p class="text-xs text-gray-500 font-bold uppercase">Usuarios Activos</p><h3 class="text-2xl font-bold text-gray-800" id="stat-clientes">0</h3></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-brand-card rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-96">
+                        <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                            <h3 class="font-bold text-sm"><i class="fa-solid fa-bolt text-brand-gold mr-2"></i>Actividad Reciente</h3>
+                            <button class="text-xs text-brand-gold hover:underline">Ver todo</button>
+                        </div>
+                        <div class="p-4 flex-1 overflow-y-auto custom-scrollbar space-y-4">
+                            <div class="flex items-start space-x-3 text-sm">
+                                <div class="w-2 h-2 mt-1.5 rounded-full bg-green-500 shrink-0"></div>
+                                <div class="flex-1"><p><span class="font-bold">Sistema</span> procesó automáticamente la victoria de $12.00 para <span class="font-bold">Usuario #102</span></p><span class="text-[10px] text-gray-400">Hace 10 min</span></div>
+                            </div>
+                            <div class="flex items-start space-x-3 text-sm">
+                                <div class="w-2 h-2 mt-1.5 rounded-full bg-blue-500 shrink-0"></div>
+                                <div class="flex-1"><p><span class="font-bold">Admin Master</span> aprobó el KYC de <span class="font-bold">María G.</span></p><span class="text-[10px] text-gray-400">Hace 45 min</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-card rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-96">
+                        <div class="p-4 border-b bg-gray-50">
+                            <h3 class="font-bold text-sm"><i class="fa-solid fa-hourglass-half text-red-500 mr-2"></i>Próximos Cierres de Sorteo</h3>
+                        </div>
+                        <div class="p-4 flex-1 overflow-y-auto custom-scrollbar space-y-3">
+                            <div class="bg-red-50 border border-red-100 rounded-lg p-3 flex justify-between items-center">
+                                <div><p class="font-bold text-red-700 text-sm">Powerball</p><p class="text-xs text-red-600">Premio: $420M</p></div>
+                                <div class="text-right"><p class="text-xl font-mono font-bold text-red-600 animate-pulse-fast">02:15:30</p><p class="text-[9px] uppercase text-red-500 font-bold">Para el cierre</p></div>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center">
+                                <div><p class="font-bold text-gray-700 text-sm">Florida Lotto</p><p class="text-xs text-gray-500">Premio: $14.5M</p></div>
+                                <div class="text-right"><p class="text-lg font-mono font-bold text-gray-600">22:40:00</p><p class="text-[9px] uppercase text-gray-500 font-bold">Para el cierre</p></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div id="view-kyc" class="admin-section hidden">
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <div class="p-5 border-b bg-gray-50 font-bold"><i class="fa-solid fa-user-clock text-brand-gold mr-2"></i> Validaciones Pendientes</div>
+            <div id="view-boletos" class="admin-section hidden">
+                <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
+                    <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="Buscar por ID o Usuario..." class="text-sm border rounded-lg px-3 py-1.5 focus:border-brand-gold outline-none w-64">
+                            <select class="text-sm border rounded-lg px-3 py-1.5 outline-none"><option>Todos los Estados</option><option>Por Comprar</option><option>En Custodia</option></select>
+                        </div>
+                        <button class="bg-brand-text text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-gray-800"><i class="fa-solid fa-print mr-1"></i> Imprimir Manifiesto</button>
+                    </div>
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><th class="p-4">Cliente</th><th class="p-4">Documento</th><th class="p-4 text-center">Ver ID</th><th class="p-4 text-right">Acción</th></thead>
-                        <tbody id="tabla-kyc"><tr><td colspan="4" class="p-6 text-center text-gray-400">Cargando...</td></tr></tbody>
+                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider">
+                            <tr><th class="p-4">ID / Fecha Compra</th><th class="p-4">Usuario</th><th class="p-4">Lotería / Números</th><th class="p-4">Estado Actual</th><th class="p-4 text-center">Acción</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4"><p class="font-mono font-bold">#TK-8890</p><p class="text-xs text-gray-400">Hoy 10:30 AM</p></td>
+                                <td class="p-4"><p class="font-bold">Juan Pérez</p><p class="text-xs text-gray-500">juan@email.com</p></td>
+                                <td class="p-4"><p class="font-bold text-red-600 text-xs">POWERBALL</p><p class="font-mono text-xs mt-1">04-12-23-45-58 <span class="text-red-500 font-bold">PB10</span></p></td>
+                                <td class="p-4"><span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded-full"><i class="fa-solid fa-cart-shopping mr-1"></i> Por Comprar</span></td>
+                                <td class="p-4 text-center"><button class="bg-brand-gold text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-yellow-600 transition-colors"><i class="fa-solid fa-upload mr-1"></i> Subir Escaneo</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-finanzas" class="admin-section hidden">
+                <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
+                    <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                        <h3 class="font-bold text-sm">Validación de Transacciones</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-lg border border-yellow-200">Pendientes (5)</button>
+                            <button class="px-3 py-1 bg-white text-gray-600 text-xs font-bold rounded-lg border hover:bg-gray-50">Historial</button>
+                        </div>
+                    </div>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider">
+                            <tr><th class="p-4">Fecha / ID</th><th class="p-4">Cliente</th><th class="p-4">Monto / Método</th><th class="p-4">Referencia</th><th class="p-4">Estado</th><th class="p-4 text-right">Acción</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4"><p class="font-mono text-xs">#TX-105</p><p class="text-[10px] text-gray-400">Hace 15 min</p></td>
+                                <td class="p-4"><p class="font-bold text-xs">María G.</p></td>
+                                <td class="p-4"><p class="font-bold text-green-600">$50.00</p><p class="text-[10px] bg-purple-100 text-purple-700 inline-block px-1 rounded font-bold">ZELLE</p></td>
+                                <td class="p-4"><p class="font-mono text-xs bg-gray-100 p-1 rounded inline-block">109849200</p></td>
+                                <td class="p-4"><span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Revisión</span></td>
+                                <td class="p-4 text-right space-x-1">
+                                    <button class="bg-green-500 text-white px-2 py-1.5 rounded text-xs font-bold hover:bg-green-600"><i class="fa-solid fa-check"></i></button>
+                                    <button class="bg-red-500 text-white px-2 py-1.5 rounded text-xs font-bold hover:bg-red-600"><i class="fa-solid fa-xmark"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
 
             <div id="view-clientes" class="admin-section hidden">
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <div class="p-5 border-b bg-gray-50 font-bold flex justify-between">
-                        <span><i class="fa-solid fa-users text-brand-gold mr-2"></i> Base de Clientes Activos</span>
+                <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
+                    <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                        <input type="text" placeholder="Buscar cliente..." class="text-sm border rounded-lg px-3 py-1.5 focus:border-brand-gold outline-none w-64">
                     </div>
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><th class="p-4">Cliente</th><th class="p-4">Registro</th><th class="p-4">Estatus KYC</th><th class="p-4">Billetera</th></thead>
-                        <tbody id="tabla-clientes"><tr><td colspan="4" class="p-6 text-center text-gray-400">Cargando...</td></tr></tbody>
+                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider">
+                            <tr><th class="p-4">Cliente</th><th class="p-4">Contacto / ID</th><th class="p-4">Balance</th><th class="p-4">Estatus KYC</th><th class="p-4">Estado Cta.</th><th class="p-4 text-right">Acción</th></tr>
+                        </thead>
+                        <tbody id="tabla-clientes" class="divide-y divide-gray-100">
+                            <tr><td colspan="6" class="p-8 text-center text-gray-400">Cargando base de datos...</td></tr>
+                        </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div id="view-config" class="admin-section hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-brand-card rounded-xl shadow-sm border p-6 space-y-6">
+                        <h3 class="font-bold text-lg border-b pb-2"><i class="fa-solid fa-gears text-brand-gold mr-2"></i> Ajustes de Plataforma</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <div><p class="font-bold text-sm">Precio Powerball (USD)</p><p class="text-[10px] text-gray-500">Precio final cobrado al cliente por línea.</p></div>
+                                <input type="number" value="5.00" class="w-20 border rounded p-1.5 text-center font-bold text-sm">
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div><p class="font-bold text-sm">Monto Mínimo Retiro (USD)</p></div>
+                                <input type="number" value="20.00" class="w-20 border rounded p-1.5 text-center font-bold text-sm">
+                            </div>
+                            <hr class="border-gray-100">
+                            <div>
+                                <h4 class="font-bold text-sm mb-3">Métodos de Depósito Activos</h4>
+                                <label class="flex items-center space-x-2 text-sm mb-2"><input type="checkbox" checked class="accent-brand-gold"> <span>Criptomonedas (USDT TRC20)</span></label>
+                                <label class="flex items-center space-x-2 text-sm"><input type="checkbox" checked class="accent-brand-gold"> <span>Zelle</span></label>
+                            </div>
+                            <button class="w-full bg-brand-text text-white py-2 rounded text-sm font-bold mt-4">Guardar Ajustes</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-card rounded-xl shadow-sm border p-6">
+                        <h3 class="font-bold text-lg border-b pb-2 mb-4"><i class="fa-solid fa-user-shield text-blue-500 mr-2"></i> Gestión de Equipo (Staff)</h3>
+                        <form onsubmit="event.preventDefault(); alert('Usuario Creado');" class="space-y-3 bg-gray-50 p-4 rounded-lg border mb-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" placeholder="Nombre Empleado" class="p-2 border rounded text-xs" required>
+                                <input type="email" placeholder="Correo corporativo" class="p-2 border rounded text-xs" required>
+                                <select class="p-2 border rounded text-xs" required><option value="USUARIO">Operador (Solo lectura/KyC)</option><option value="ADMIN">Master Admin</option></select>
+                                <input type="password" placeholder="Clave temporal" class="p-2 border rounded text-xs" required>
+                            </div>
+                            <button class="w-full bg-blue-600 text-white py-2 rounded text-xs font-bold hover:bg-blue-700">Crear Acceso</button>
+                        </form>
+                        
+                        <div class="text-xs text-gray-500 font-bold uppercase mb-2">Personal Activo</div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center border p-2 rounded">
+                                <div><p class="font-bold text-sm text-brand-text">Víctor M.</p><p class="text-[10px]">master@safeticket.com</p></div>
+                                <span class="bg-gray-800 text-white text-[10px] px-2 py-1 rounded">MASTER</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div id="view-sorteos" class="admin-section hidden space-y-6">
-                <div class="bg-white rounded-xl shadow-sm border p-6 max-w-2xl">
+                <div class="bg-brand-card rounded-xl shadow-sm border p-6 max-w-2xl">
                     <h3 class="font-bold mb-4"><i class="fa-solid fa-calendar-plus text-brand-gold mr-2"></i> Programar Nuevo Sorteo</h3>
-                    <form id="form-sorteo" onsubmit="crearSorteo(event)" class="space-y-4">
+                    <form onsubmit="crearSorteo(event)" class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Lotería</label>
-                                <select id="s-juego" class="w-full p-2 border rounded" required><option value="1">Loto (Florida)</option><option value="2">Powerball</option></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Premio Mayor (USD)</label>
-                                <input type="number" id="s-premio" class="w-full p-2 border rounded" placeholder="Ej. 420000000" required>
-                            </div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Lotería</label><select id="s-juego" class="w-full p-2.5 border rounded" required><option value="1">Loto (Florida)</option><option value="2">Powerball</option></select></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Premio Mayor (USD)</label><input type="number" id="s-premio" class="w-full p-2.5 border rounded" placeholder="Ej. 420000000" required></div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Fecha y Hora de Cierre</label>
-                            <input type="datetime-local" id="s-fecha" class="w-full p-2 border rounded" required>
-                        </div>
-                        <button type="submit" class="bg-brand-text text-white px-6 py-2 rounded hover:bg-gray-800 w-full font-bold">Crear Sorteo y Activar Contador</button>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Fecha y Hora de Cierre</label><input type="datetime-local" id="s-fecha" class="w-full p-2.5 border rounded" required></div>
+                        <button type="submit" class="bg-brand-text text-white px-6 py-3 rounded-lg hover:bg-gray-800 w-full font-bold">Crear Sorteo y Activar Contador en App</button>
                     </form>
                 </div>
+            </div>
 
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <div class="p-5 border-b bg-gray-50 font-bold"><i class="fa-solid fa-list text-brand-gold mr-2"></i> Sorteos Programados</div>
+            <div id="view-kyc" class="admin-section hidden">
+                <div class="bg-brand-card rounded-xl shadow-sm border overflow-hidden">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><th class="p-4">Lotería</th><th class="p-4">Fecha Cierre</th><th class="p-4">Premio Mayor</th></thead>
-                        <tbody id="tabla-sorteos"></tbody>
+                        <thead class="bg-gray-100 text-gray-500 text-[10px] uppercase"><tr><th class="p-4">Cliente</th><th class="p-4">Documento</th><th class="p-4 text-center">Ver ID</th><th class="p-4 text-right">Acción</th></tr></thead>
+                        <tbody id="tabla-kyc" class="divide-y divide-gray-100"></tbody>
                     </table>
-                </div>
-            </div>
-
-            <div id="view-staff" class="admin-section hidden">
-                <div class="bg-white rounded-xl shadow-sm border p-6 max-w-lg mx-auto mt-10">
-                    <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex justify-center items-center text-2xl mx-auto mb-3"><i class="fa-solid fa-user-shield"></i></div>
-                        <h3 class="font-bold text-xl">Añadir Nuevo Administrador</h3>
-                        <p class="text-xs text-gray-500">Otorga accesos para el equipo de trabajo.</p>
-                    </div>
-                    <form onsubmit="crearStaff(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Nombre del Empleado</label>
-                            <input type="text" id="st-nombre" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Correo Institucional</label>
-                            <input type="email" id="st-email" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none" placeholder="@safeticket.com" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Asignar Rol</label>
-                            <select id="st-rol" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none">
-                                <option value="USUARIO">Operador (Sube boletos y aprueba KYC)</option>
-                                <option value="ADMIN">Master (Control Total)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Contraseña de Acceso</label>
-                            <input type="password" id="st-pass" class="w-full p-2.5 border rounded focus:border-brand-gold outline-none" required>
-                        </div>
-                        <button type="submit" id="btn-staff" class="w-full bg-brand-gold text-white py-3 rounded-lg font-bold hover:bg-yellow-600 mt-2">Registrar Usuario</button>
-                    </form>
-                </div>
-            </div>
-
-            <div id="view-boletos" class="admin-section hidden">
-                <div class="bg-white rounded-xl shadow-sm border p-12 text-center text-gray-400">
-                    <i class="fa-solid fa-hammer text-4xl mb-4 text-gray-300"></i>
-                    <h3 class="text-xl font-bold text-gray-600">Módulo en Desarrollo</h3>
-                    <p>Aquí verás todos los boletos comprados por los usuarios listos para subirles la foto.</p>
                 </div>
             </div>
 
@@ -188,7 +317,7 @@
     <script>
         let adminActual = null;
 
-        // --- SEGURIDAD AL CARGAR ---
+        // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', () => {
             const usuarioStr = localStorage.getItem('usuario');
             if (!usuarioStr) { window.location.href = '/login.html'; return; }
@@ -198,15 +327,11 @@
 
             document.getElementById('admin-name').innerText = adminActual.nombre;
             document.getElementById('admin-avatar').innerText = adminActual.nombre.charAt(0).toUpperCase();
-            document.getElementById('admin-role').innerText = adminActual.rol;
-
-            // Ocultar opción "Crear Staff" si no es Master
-            if(adminActual.rol !== 'ADMIN') document.getElementById('menu-staff').classList.add('hidden');
 
             actualizarEstadisticas();
         });
 
-        // --- NAVEGACIÓN ---
+        // --- NAVEGADOR DE VISTAS ---
         function switchAdminView(viewId, element) {
             document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
             document.getElementById(viewId).classList.remove('hidden');
@@ -214,17 +339,40 @@
             document.querySelectorAll('.admin-nav-link').forEach(link => { link.classList.remove('bg-brand-gold/10', 'text-brand-gold'); link.classList.add('hover:bg-gray-800'); });
             if(element) { element.classList.remove('hover:bg-gray-800'); element.classList.add('bg-brand-gold/10', 'text-brand-gold'); }
 
-            const titles = { 'view-dashboard':'Panel Principal', 'view-kyc':'Validaciones de Identidad', 'view-clientes':'Base de Clientes', 'view-sorteos':'Programación de Sorteos', 'view-staff':'Gestión de Equipo', 'view-boletos':'Control de Boletos' };
+            const titles = { 'view-dashboard':'Dashboard General', 'view-boletos':'Gestión y Custodia de Boletos', 'view-sorteos':'Sorteos y Contadores', 'view-finanzas':'Control de Tesorería', 'view-kyc':'Validaciones de Identidad (KYC)', 'view-clientes':'Base de Clientes', 'view-config':'Configuración del Sistema' };
             document.getElementById('header-title').innerText = titles[viewId] || '';
         }
 
-        // --- CONEXIONES CON BACKEND (APIs) ---
+        // --- CONEXIONES API ---
         function actualizarEstadisticas() {
             fetch('/api/admin/stats').then(res => res.json()).then(data => {
                 if(data.exito) {
                     document.getElementById('stat-clientes').innerText = data.total_clientes;
-                    document.getElementById('stat-kyc').innerText = data.kyc_pendientes;
-                    document.getElementById('badge-kyc').innerText = data.kyc_pendientes;
+                    // Aquí luego añadiremos las llamadas para llenar los contadores de Boletos y Depósitos
+                }
+            });
+        }
+
+        function cargarClientes() {
+            const tbody = document.getElementById('tabla-clientes');
+            fetch('/api/admin/clientes').then(res => res.json()).then(data => {
+                if(data.exito && data.clientes.length > 0) {
+                    tbody.innerHTML = '';
+                    data.clientes.forEach(c => {
+                        let badgeKYC = c.estado_kyc === 'APROBADO' ? '<span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded font-bold">Aprobado</span>' : '<span class="bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded font-bold">Pendiente</span>';
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4"><p class="font-bold text-gray-800">${c.nombre} ${c.apellido || ''}</p><p class="text-[10px] text-gray-500">${c.email}</p></td>
+                                <td class="p-4"><p class="font-mono text-xs">${c.numero_documento || 'N/A'}</p></td>
+                                <td class="p-4 font-bold text-green-600">$${parseFloat(c.saldo_disponible).toFixed(2)}</td>
+                                <td class="p-4">${badgeKYC}</td>
+                                <td class="p-4"><span class="text-green-500 text-xs font-bold"><i class="fa-solid fa-circle text-[8px]"></i> Activo</span></td>
+                                <td class="p-4 text-right">
+                                    <button class="text-brand-text hover:text-brand-gold bg-gray-100 p-1.5 rounded"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded ml-1"><i class="fa-solid fa-ban"></i></button>
+                                </td>
+                            </tr>`;
+                    });
                 }
             });
         }
@@ -237,71 +385,18 @@
                     data.usuarios.forEach(user => {
                         const urlImg = user.documento_url ? `'${user.documento_url}'` : 'null';
                         tbody.innerHTML += `
-                            <tr class="border-b">
+                            <tr class="hover:bg-gray-50 border-b border-gray-100">
                                 <td class="p-4"><p class="font-bold">${user.nombre} ${user.apellido}</p><p class="text-xs text-gray-500">${user.email}</p></td>
-                                <td class="p-4"><span class="text-xs font-bold bg-gray-100 px-2 py-1 rounded">${user.tipo_documento}</span><p class="mt-1">${user.numero_documento}</p></td>
+                                <td class="p-4"><span class="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded">${user.tipo_documento}</span><p class="font-mono text-xs mt-1">${user.numero_documento}</p></td>
                                 <td class="p-4 text-center"><button onclick="verDocumento(${urlImg}, '${user.nombre}', '${user.numero_documento}', ${user.id})" class="text-brand-gold p-2 bg-brand-goldLight rounded hover:bg-yellow-200"><i class="fa-solid fa-image"></i></button></td>
-                                <td class="p-4 text-right"><button onclick="aprobarUsuario(${user.id})" class="bg-green-500 text-white px-4 py-1.5 rounded text-xs font-bold hover:bg-green-600">Aprobar</button></td>
+                                <td class="p-4 text-right"><button onclick="aprobarUsuario(${user.id})" class="bg-green-500 text-white px-4 py-1.5 rounded text-xs font-bold hover:bg-green-600 shadow-sm">Aprobar</button></td>
                             </tr>`;
                     });
-                } else tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-400">No hay validaciones pendientes.</td></tr>';
+                } else tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-400">No hay validaciones pendientes.</td></tr>';
             });
         }
 
-        function cargarClientes() {
-            const tbody = document.getElementById('tabla-clientes');
-            fetch('/api/admin/clientes').then(res => res.json()).then(data => {
-                if(data.exito && data.clientes.length > 0) {
-                    tbody.innerHTML = '';
-                    data.clientes.forEach(c => {
-                        let badge = c.estado_kyc === 'APROBADO' ? '<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-bold">Aprobado</span>' : '<span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded font-bold">Pendiente</span>';
-                        tbody.innerHTML += `
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4"><p class="font-bold text-gray-800">${c.nombre} ${c.apellido || ''}</p><p class="text-xs text-gray-500">${c.email}</p></td>
-                                <td class="p-4 text-gray-600">${c.fecha}</td>
-                                <td class="p-4">${badge}</td>
-                                <td class="p-4 font-bold text-green-600">$${parseFloat(c.saldo_disponible).toFixed(2)}</td>
-                            </tr>`;
-                    });
-                }
-            });
-        }
-
-        // --- CREACIÓN DE STAFF ---
-        function crearStaff(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-staff');
-            btn.innerText = "Registrando..."; btn.disabled = true;
-            const data = { nombre: document.getElementById('st-nombre').value, email: document.getElementById('st-email').value, rol: document.getElementById('st-rol').value, password: document.getElementById('st-pass').value };
-            
-            fetch('/api/admin/crear-staff', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
-            .then(res => res.json()).then(res => {
-                alert(res.mensaje); btn.innerText = "Registrar Usuario"; btn.disabled = false;
-                if(res.exito) e.target.reset();
-            });
-        }
-
-        // --- GESTIÓN DE SORTEOS ---
-        function cargarSorteos() {
-            fetch('/api/admin/sorteos').then(res => res.json()).then(data => {
-                const tbody = document.getElementById('tabla-sorteos');
-                tbody.innerHTML = '';
-                if(data.exito) {
-                    data.sorteos.forEach(s => {
-                        tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold">${s.loteria}</td><td class="p-4">${s.fecha.replace('T', ' ')}</td><td class="p-4 text-green-600 font-bold">$${Number(s.premio_mayor).toLocaleString()}</td></tr>`;
-                    });
-                }
-            });
-        }
-
-        function crearSorteo(e) {
-            e.preventDefault();
-            const data = { juego_id: document.getElementById('s-juego').value, fecha_sorteo: document.getElementById('s-fecha').value, premio_mayor: document.getElementById('s-premio').value };
-            fetch('/api/admin/crear-sorteo', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
-            .then(res => res.json()).then(res => { alert(res.mensaje); if(res.exito) { e.target.reset(); cargarSorteos(); } });
-        }
-
-        // --- LÓGICA MODAL KYC ---
+        // Lógica de Modales y Cierres (Igual que antes)
         function verDocumento(url, nombre, doc, id) {
             if(!url) return alert('El usuario no subió imagen.');
             document.getElementById('img-documento').src = url;
@@ -315,6 +410,13 @@
             if(!confirm('¿Aprobar identidad?')) return;
             fetch('/api/admin/aprobar-kyc', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({usuario_id: id, admin_id: adminActual.id}) })
             .then(res => res.json()).then(data => { alert(data.mensaje); cargarPendientesKYC(); actualizarEstadisticas(); });
+        }
+
+        function crearSorteo(e) {
+            e.preventDefault();
+            const data = { juego_id: document.getElementById('s-juego').value, fecha_sorteo: document.getElementById('s-fecha').value, premio_mayor: document.getElementById('s-premio').value };
+            fetch('/api/admin/crear-sorteo', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
+            .then(res => res.json()).then(res => { alert(res.mensaje); if(res.exito) e.target.reset(); });
         }
 
         function cerrarSesionAdmin() { localStorage.removeItem('usuario'); window.location.href = '/login.html'; }
