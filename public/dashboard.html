@@ -48,21 +48,12 @@
             </div>
             <div class="p-6 text-center bg-gray-100">
                 <div class="bg-white p-4 border border-gray-300 shadow-sm mx-auto w-full max-w-xs transform rotate-1">
-                    <div class="border-b-2 border-dashed border-gray-300 pb-2 mb-4">
-                        <h4 class="font-bold text-xl uppercase tracking-widest text-gray-800">POWERBALL</h4>
-                        <p class="text-xs text-gray-500">FLORIDA LOTTERY</p>
-                    </div>
-                    <div class="space-y-2 text-lg font-mono font-bold tracking-widest text-gray-700">
-                        <p>A. 04 12 23 45 58 <span class="text-red-500">PB10</span></p>
-                    </div>
-                    <div class="mt-6 pt-2 border-t border-gray-200 text-left">
-                        <p class="text-[10px] text-gray-400 font-mono">TICKET: 8849-201A-9938<br>DRAW: OCT 25 2023</p>
-                    </div>
+                    <div class="border-b-2 border-dashed border-gray-300 pb-2 mb-4"><h4 class="font-bold text-xl uppercase tracking-widest text-gray-800">POWERBALL</h4><p class="text-xs text-gray-500">FLORIDA LOTTERY</p></div>
+                    <div class="space-y-2 text-lg font-mono font-bold tracking-widest text-gray-700"><p>A. 04 12 23 45 58 <span class="text-red-500">PB10</span></p></div>
+                    <div class="mt-6 pt-2 border-t border-gray-200 text-left"><p class="text-[10px] text-gray-400 font-mono">TICKET: 8849-201A-9938<br>DRAW: OCT 25 2023</p></div>
                 </div>
             </div>
-            <div class="p-4 border-t border-gray-100 text-center">
-                <p class="text-xs text-gray-500" data-i18n="modal_scan_desc">Este documento está bajo custodia física en nuestras bóvedas en Miami, FL.</p>
-            </div>
+            <div class="p-4 border-t border-gray-100 text-center"><p class="text-xs text-gray-500" data-i18n="modal_scan_desc">Este documento está bajo custodia física en nuestras bóvedas en Miami, FL.</p></div>
         </div>
     </div>
 
@@ -77,29 +68,36 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal_dep_amount">Monto a depositar (USD)</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><span class="text-gray-500 font-bold">$</span></div>
-                        <input type="number" class="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-200 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold outline-none text-lg font-bold" placeholder="50.00">
+                        <input type="number" id="dep-monto" class="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-200 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold outline-none text-lg font-bold" placeholder="50.00">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="modal_dep_method">Método de Pago</label>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="border border-brand-gold bg-brand-goldLight/20 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer">
-                            <input type="radio" name="payment" class="hidden" checked>
+                            <input type="radio" name="payment" value="USDT" class="hidden" checked>
                             <i class="fa-brands fa-bitcoin text-2xl text-orange-500 mb-2"></i>
                             <span class="text-sm font-semibold">Cripto (USDT)</span>
                         </label>
                         <label class="border border-gray-200 hover:border-brand-gold rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-colors">
-                            <input type="radio" name="payment" class="hidden">
+                            <input type="radio" name="payment" value="ZELLE" class="hidden">
                             <i class="fa-solid fa-money-bill-transfer text-2xl text-purple-600 mb-2"></i>
                             <span class="text-sm font-semibold">Zelle</span>
                         </label>
                     </div>
                 </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Número de Referencia</label>
+                    <input type="text" id="dep-ref" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-gold outline-none text-sm" placeholder="Ej. 102938472">
+                </div>
+
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm text-gray-600">
                     <p class="font-semibold mb-1" data-i18n="modal_dep_inst_title">Instrucciones:</p>
-                    <p data-i18n="modal_dep_inst_desc">Envía USDT (Red TRC20) a la siguiente dirección. Tu saldo se actualizará en 5 minutos.</p>
+                    <p data-i18n="modal_dep_inst_desc">Realiza el pago y coloca el número de referencia arriba para que el administrador lo valide.</p>
                 </div>
-                <button onclick="alert('Procesando depósito...'); closeModal('modal-deposit');" class="w-full bg-brand-text text-white py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors" data-i18n="btn_confirm_dep">Notificar Pago</button>
+                
+                <button onclick="enviarDeposito()" class="w-full bg-brand-text text-white py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors" data-i18n="btn_confirm_dep">Notificar Pago</button>
             </div>
         </div>
     </div>
@@ -115,90 +113,40 @@
                     <span class="text-sm text-brand-gold font-semibold" data-i18n="modal_wit_avail">Balance Disponible:</span>
                     <span id="modal-saldo-retiro" class="font-bold text-brand-text">$0.00</span>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal_dep_amount">Monto a retirar</label>
-                    <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-gold outline-none" placeholder="0.00">
-                </div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="modal_dep_amount">Monto a retirar</label><input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none" placeholder="0.00"></div>
                 <button onclick="alert('Solicitud enviada. Revisión en 24h.'); closeModal('modal-withdraw');" class="w-full bg-brand-gold text-white py-3 rounded-lg font-bold hover:bg-brand-goldHover transition-colors" data-i18n="btn_confirm_wit">Solicitar Retiro</button>
             </div>
         </div>
     </div>
 
     <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full shadow-soft z-20">
-        <div class="h-20 flex items-center px-6 border-b border-gray-50">
-            <i class="fa-solid fa-ticket text-brand-gold text-2xl mr-2"></i>
-            <span class="font-serif text-2xl font-bold tracking-tight text-brand-text">Safe<span class="text-brand-gold">Ticket</span></span>
-        </div>
-
+        <div class="h-20 flex items-center px-6 border-b border-gray-50"><i class="fa-solid fa-ticket text-brand-gold text-2xl mr-2"></i><span class="font-serif text-2xl font-bold tracking-tight text-brand-text">Safe<span class="text-brand-gold">Ticket</span></span></div>
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="#" onclick="switchView('view-dashboard')" data-target="view-dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 bg-brand-goldLight text-brand-gold rounded-xl font-medium transition-all-fast">
-                <i class="fa-solid fa-vault w-5 text-center"></i><span data-i18n="nav_dashboard">Mi Bóveda</span>
-            </a>
-            <a href="#" onclick="switchView('view-buy')" data-target="view-buy" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
-                <i class="fa-solid fa-cart-shopping w-5 text-center"></i><span data-i18n="nav_buy">Comprar Boletos</span>
-            </a>
-            <a href="#" onclick="switchView('view-scans')" data-target="view-scans" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
-                <i class="fa-solid fa-file-invoice w-5 text-center"></i><span data-i18n="nav_scans">Mis Escaneos</span>
-            </a>
-            <a href="#" onclick="switchView('view-wallet')" data-target="view-wallet" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
-                <i class="fa-solid fa-wallet w-5 text-center"></i><span data-i18n="nav_wallet">Billetera</span>
-            </a>
-            <a href="#" onclick="switchView('view-settings')" data-target="view-settings" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast">
-                <i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="nav_settings">Ajustes</span>
-            </a>
+            <a href="#" onclick="switchView('view-dashboard')" data-target="view-dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 bg-brand-goldLight text-brand-gold rounded-xl font-medium transition-all-fast"><i class="fa-solid fa-vault w-5 text-center"></i><span data-i18n="nav_dashboard">Mi Bóveda</span></a>
+            <a href="#" onclick="switchView('view-buy')" data-target="view-buy" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast"><i class="fa-solid fa-cart-shopping w-5 text-center"></i><span data-i18n="nav_buy">Comprar Boletos</span></a>
+            <a href="#" onclick="switchView('view-scans')" data-target="view-scans" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast"><i class="fa-solid fa-file-invoice w-5 text-center"></i><span data-i18n="nav_scans">Mis Escaneos</span></a>
+            <a href="#" onclick="switchView('view-wallet')" data-target="view-wallet" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast"><i class="fa-solid fa-wallet w-5 text-center"></i><span data-i18n="nav_wallet">Billetera</span></a>
+            <a href="#" onclick="switchView('view-settings')" data-target="view-settings" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-brand-text rounded-xl font-medium transition-all-fast"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="nav_settings">Ajustes</span></a>
         </nav>
-
-        <div class="p-4 border-t border-gray-50">
-            <button onclick="cerrarSesion()" class="w-full flex items-center justify-center space-x-2 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 px-4 py-3 rounded-xl font-medium transition-all-fast">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i><span data-i18n="nav_logout">Cerrar Sesión</span>
-            </button>
-        </div>
+        <div class="p-4 border-t border-gray-50"><button onclick="cerrarSesion()" class="w-full flex items-center justify-center space-x-2 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-500 px-4 py-3 rounded-xl font-medium transition-all-fast"><i class="fa-solid fa-arrow-right-from-bracket"></i><span data-i18n="nav_logout">Cerrar Sesión</span></button></div>
     </aside>
 
     <div class="flex-1 flex flex-col h-full overflow-hidden relative">
         <header class="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10 sticky top-0">
             <button onclick="toggleMobileMenu()" class="md:hidden text-gray-500 hover:text-brand-text"><i class="fa-solid fa-bars text-xl"></i></button>
-
-            <div class="hidden md:block">
-                <h2 class="text-xl font-serif font-bold text-brand-text"><span data-i18n="header_greeting">Hola,</span> <span id="user-greeting-name">Usuario</span> <i class="fa-solid fa-hand-wave text-brand-gold ml-1"></i></h2>
-                <p id="header-date" class="text-xs text-gray-400 font-medium" data-i18n="header_date">Cargando fecha...</p>
-            </div>
-
+            <div class="hidden md:block"><h2 class="text-xl font-serif font-bold text-brand-text"><span data-i18n="header_greeting">Hola,</span> <span id="user-greeting-name">Usuario</span> <i class="fa-solid fa-hand-wave text-brand-gold ml-1"></i></h2><p id="header-date" class="text-xs text-gray-400 font-medium" data-i18n="header_date">Cargando fecha...</p></div>
             <div class="flex items-center space-x-4 sm:space-x-6">
-                <button onclick="toggleLanguage()" class="flex items-center space-x-1 text-gray-500 hover:text-brand-gold font-semibold transition-colors">
-                    <i class="fa-solid fa-globe text-brand-gold"></i> <span id="current-lang" class="text-sm">ES</span>
-                </button>
-                
+                <button onclick="toggleLanguage()" class="flex items-center space-x-1 text-gray-500 hover:text-brand-gold font-semibold transition-colors"><i class="fa-solid fa-globe text-brand-gold"></i> <span id="current-lang" class="text-sm">ES</span></button>
+                <button class="text-gray-400 hover:text-brand-gold bg-gray-50 p-2 rounded-lg" onclick="location.reload()" title="Actualizar Datos"><i class="fa-solid fa-arrows-rotate"></i></button>
                 <div class="relative">
-                    <button id="btn-notifications" onclick="toggleNotifications(event)" class="relative text-gray-400 hover:text-brand-text transition-colors focus:outline-none">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                    </button>
-                    <div id="dropdown-notifications" class="hidden absolute right-0 mt-4 w-72 bg-white rounded-xl shadow-modal border border-gray-100 z-50 animate-fade-in overflow-hidden">
-                        <div class="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                            <h4 class="font-bold text-brand-text text-sm" data-i18n="notif_title">Notificaciones</h4>
-                        </div>
-                        <div class="max-h-64 overflow-y-auto p-4 text-center text-gray-400 text-sm">
-                            No tienes notificaciones nuevas.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <div id="btn-profile" onclick="toggleProfileMenu(event)" class="h-10 w-10 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow">
-                        <span id="user-avatar" class="font-bold text-brand-gold">U</span>
-                    </div>
+                    <div id="btn-profile" onclick="toggleProfileMenu(event)" class="h-10 w-10 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow"><span id="user-avatar" class="font-bold text-brand-gold">U</span></div>
                     <div id="dropdown-profile" class="hidden absolute right-0 mt-4 w-56 bg-white rounded-xl shadow-modal border border-gray-100 z-50 animate-fade-in overflow-hidden">
-                        <div class="p-4 border-b border-gray-50 bg-gray-50/50">
-                            <p id="dropdown-name" class="font-bold text-brand-text text-sm">Nombre Usuario</p>
-                            <p id="dropdown-email" class="text-xs text-gray-500 truncate">correo@ejemplo.com</p>
-                        </div>
+                        <div class="p-4 border-b border-gray-50 bg-gray-50/50"><p id="dropdown-name" class="font-bold text-brand-text text-sm">Nombre Usuario</p><p id="dropdown-email" class="text-xs text-gray-500 truncate">correo@ejemplo.com</p></div>
                         <div class="py-2">
                             <a href="#" onclick="switchView('view-settings'); closeDropdowns();" class="block px-4 py-2 text-sm text-gray-600 hover:text-brand-gold hover:bg-brand-goldLight/20 transition-colors"><i class="fa-solid fa-user-gear w-5 text-center mr-2"></i> <span data-i18n="menu_profile">Mi Perfil</span></a>
                             <a href="#" onclick="switchView('view-wallet'); closeDropdowns();" class="block px-4 py-2 text-sm text-gray-600 hover:text-brand-gold hover:bg-brand-goldLight/20 transition-colors"><i class="fa-solid fa-wallet w-5 text-center mr-2"></i> <span data-i18n="nav_wallet">Billetera</span></a>
                         </div>
-                        <div class="border-t border-gray-50 py-2">
-                            <a href="#" onclick="cerrarSesion()" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"><i class="fa-solid fa-arrow-right-from-bracket w-5 text-center mr-2"></i> <span data-i18n="nav_logout">Cerrar Sesión</span></a>
-                        </div>
+                        <div class="border-t border-gray-50 py-2"><a href="#" onclick="cerrarSesion()" class="block px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"><i class="fa-solid fa-arrow-right-from-bracket w-5 text-center mr-2"></i> <span data-i18n="nav_logout">Cerrar Sesión</span></a></div>
                     </div>
                 </div>
             </div>
@@ -207,13 +155,7 @@
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
             
             <div id="kyc-banner" class="hidden bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-lg shadow-sm">
-                <div class="flex items-start">
-                    <i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-0.5 mr-3 text-lg"></i>
-                    <div>
-                        <p class="text-sm text-yellow-800 font-bold">Verificación de Identidad Pendiente</p>
-                        <p class="text-sm text-yellow-700 mt-1">Tu cuenta está siendo revisada. Las funciones de depósito, retiro y compra están deshabilitadas hasta validar tu documento.</p>
-                    </div>
-                </div>
+                <div class="flex items-start"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-0.5 mr-3 text-lg"></i><div><p class="text-sm text-yellow-800 font-bold">Verificación de Identidad Pendiente</p><p class="text-sm text-yellow-700 mt-1">Tu cuenta está siendo revisada. Las funciones financieras están deshabilitadas hasta validar tu documento.</p></div></div>
             </div>
 
             <div id="view-dashboard" class="view-section max-w-6xl mx-auto space-y-8 animate-fade-in">
@@ -221,10 +163,7 @@
                     <div class="bg-white rounded-2xl p-6 shadow-card border border-gray-100 flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -right-6 -top-6 text-brand-goldLight/50 text-9xl z-0"><i class="fa-solid fa-wallet"></i></div>
                         <div class="relative z-10 flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-1" data-i18n="dash_balance_title">Balance Disponible</p>
-                                <h3 id="saldo-principal" class="text-4xl font-bold text-brand-text">$0.00</h3>
-                            </div>
+                            <div><p class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-1" data-i18n="dash_balance_title">Balance Disponible</p><h3 id="saldo-principal" class="text-4xl font-bold text-brand-text">$0.00</h3></div>
                             <div class="bg-brand-bg p-2 rounded-lg text-brand-gold"><i class="fa-solid fa-coins text-xl"></i></div>
                         </div>
                         <div class="relative z-10 flex space-x-3">
@@ -234,10 +173,7 @@
                     </div>
                     <div class="bg-gradient-to-br from-brand-gold to-brand-goldHover rounded-2xl p-6 shadow-card text-white flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -right-2 -bottom-4 text-white/10 text-9xl z-0"><i class="fa-solid fa-trophy"></i></div>
-                        <div class="relative z-10">
-                            <p class="text-sm text-brand-goldLight font-medium uppercase tracking-wider mb-1" data-i18n="dash_winnings_title">Premios Acumulados</p>
-                            <h3 class="text-4xl font-bold">$0.00</h3>
-                        </div>
+                        <div class="relative z-10"><p class="text-sm text-brand-goldLight font-medium uppercase tracking-wider mb-1" data-i18n="dash_winnings_title">Premios Acumulados</p><h3 class="text-4xl font-bold">$0.00</h3></div>
                         <div class="relative z-10 mt-4"><p class="text-sm text-brand-goldLight opacity-90" data-i18n="dash_winnings_desc">Sigue jugando, el próximo ganador podrías ser tú.</p></div>
                     </div>
                 </div>
@@ -245,23 +181,7 @@
                 <div>
                     <h3 class="text-xl font-serif font-bold text-brand-text mb-4" data-i18n="section_vault">Boletos Activos</h3>
                     <div id="boletos-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 border border-dashed border-gray-300 p-8 rounded-xl text-center col-span-full">
-                            <i class="fa-solid fa-ticket text-3xl text-gray-300 mb-3"></i>
-                            <p class="text-gray-500 font-medium">Aún no tienes boletos activos.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="text-xl font-serif font-bold text-brand-text mb-4" data-i18n="section_upcoming">Próximos Grandes Sorteos</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div onclick="switchView('view-play')" class="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between hover:border-brand-gold transition-colors cursor-pointer group">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-green-600 text-xl"><i class="fa-solid fa-clover"></i></div>
-                                <div><h5 class="font-bold text-sm text-brand-text">Florida Lotto</h5><p class="font-bold text-lg text-brand-gold">$14.5M</p></div>
-                            </div>
-                            <div class="text-gray-300 group-hover:text-brand-gold"><i class="fa-solid fa-chevron-right"></i></div>
-                        </div>
+                        <div class="bg-gray-50 border border-dashed border-gray-300 p-8 rounded-xl text-center col-span-full"><i class="fa-solid fa-ticket text-3xl text-gray-300 mb-3"></i><p class="text-gray-500 font-medium">Aún no tienes boletos activos.</p></div>
                     </div>
                 </div>
             </div>
@@ -271,13 +191,9 @@
                     <h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_buy_title">Comprar Boletos</h3>
                     <p class="text-gray-500 mb-6" data-i18n="view_buy_desc">Selecciona tu lotería favorita y juega ahora.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-card transition-shadow flex flex-col">
-                            <div class="flex justify-between items-start mb-6">
-                                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xl"><i class="fa-solid fa-star"></i></div>
-                                <span class="bg-red-50 text-red-600 text-xs font-bold px-3 py-1 rounded-full border border-red-100">$420 Millones</span>
-                            </div>
-                            <h4 class="font-bold text-brand-text text-xl mb-1">Powerball</h4>
-                            <p class="text-sm text-gray-400 mb-6 flex-1">Cierre en: 04:12:35</p>
+                        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col">
+                            <div class="flex justify-between items-start mb-6"><div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xl"><i class="fa-solid fa-star"></i></div><span class="bg-red-50 text-red-600 text-xs font-bold px-3 py-1 rounded-full border border-red-100">$420 Millones</span></div>
+                            <h4 class="font-bold text-brand-text text-xl mb-1">Powerball</h4><p class="text-sm text-gray-400 mb-6 flex-1">Cierre en: 04:12:35</p>
                             <button onclick="switchView('view-play')" class="w-full bg-brand-text text-white py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors" data-i18n="btn_select_numbers">Seleccionar Números</button>
                         </div>
                     </div>
@@ -285,58 +201,30 @@
             </div>
 
             <div id="view-play" class="view-section hidden max-w-4xl mx-auto space-y-6 animate-fade-in">
-                <button onclick="switchView('view-buy')" class="text-gray-500 hover:text-brand-gold text-sm font-medium flex items-center">
-                    <i class="fa-solid fa-arrow-left mr-2"></i> <span data-i18n="btn_back">Volver a Loterías</span>
-                </button>
+                <button onclick="switchView('view-buy')" class="text-gray-500 hover:text-brand-gold text-sm font-medium flex items-center"><i class="fa-solid fa-arrow-left mr-2"></i> <span data-i18n="btn_back">Volver a Loterías</span></button>
                 <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
                     <div class="bg-gradient-to-r from-red-600 to-red-500 p-6 flex justify-between items-center text-white">
-                        <div>
-                            <h3 class="text-2xl font-bold tracking-wider">POWERBALL</h3>
-                            <p class="text-sm opacity-90">Precio por línea: $5.00</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs font-bold uppercase tracking-widest opacity-80" data-i18n="jackpot_label">PREMIO MAYOR</p>
-                            <p class="text-3xl font-bold">$420M</p>
-                        </div>
+                        <div><h3 class="text-2xl font-bold tracking-wider">POWERBALL</h3><p class="text-sm opacity-90">Precio por línea: $5.00</p></div>
+                        <div class="text-right"><p class="text-xs font-bold uppercase tracking-widest opacity-80" data-i18n="jackpot_label">PREMIO MAYOR</p><p class="text-3xl font-bold">$420M</p></div>
                     </div>
                     <div class="p-6 md:p-8 space-y-8">
                         <div class="flex justify-between items-end border-b border-gray-100 pb-4">
-                            <div>
-                                <h4 class="font-bold text-brand-text" data-i18n="play_step1">1. Elige 5 números</h4>
-                                <p class="text-xs text-gray-500">O presiona Selección Rápida</p>
-                            </div>
-                            <button onclick="quickPick()" class="bg-brand-goldLight text-brand-gold px-4 py-2 rounded font-semibold text-sm hover:bg-brand-gold hover:text-white transition-colors">
-                                <i class="fa-solid fa-bolt mr-1"></i> <span data-i18n="btn_quick">Selección Rápida</span>
-                            </button>
+                            <div><h4 class="font-bold text-brand-text" data-i18n="play_step1">1. Elige 5 números</h4><p class="text-xs text-gray-500">O presiona Selección Rápida</p></div>
+                            <button onclick="quickPick()" class="bg-brand-goldLight text-brand-gold px-4 py-2 rounded font-semibold text-sm hover:bg-brand-gold hover:text-white transition-colors"><i class="fa-solid fa-bolt mr-1"></i> <span data-i18n="btn_quick">Selección Rápida</span></button>
                         </div>
                         <div id="number-grid" class="grid grid-cols-7 sm:grid-cols-10 gap-3 justify-items-center"></div>
-                        <div class="border-b border-gray-100 pb-4 pt-4">
-                            <h4 class="font-bold text-red-500" data-i18n="play_step2">2. Elige 1 Powerball</h4>
-                        </div>
+                        <div class="border-b border-gray-100 pb-4 pt-4"><h4 class="font-bold text-red-500" data-i18n="play_step2">2. Elige 1 Powerball</h4></div>
                         <div id="powerball-grid" class="grid grid-cols-7 sm:grid-cols-10 gap-3 justify-items-center"></div>
                         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col sm:flex-row justify-between items-center mt-8">
-                            <div class="mb-4 sm:mb-0 text-center sm:text-left">
-                                <p class="text-sm font-medium text-gray-500" data-i18n="play_summary">Tu selección:</p>
-                                <div id="selection-display" class="flex gap-2 mt-2 min-h-[40px]">
-                                    <span class="text-gray-400 text-sm italic">Selecciona números para continuar...</span>
-                                </div>
-                            </div>
-                            <button id="btn-checkout" onclick="alert('Redirigiendo a pasarela de pago...');" class="bg-gray-300 text-gray-500 cursor-not-allowed px-8 py-3 rounded-lg font-bold transition-all w-full sm:w-auto" disabled>
-                                <span data-i18n="btn_buy_ticket">Pagar Boleto ($5.00)</span>
-                            </button>
+                            <div class="mb-4 sm:mb-0 text-center sm:text-left"><p class="text-sm font-medium text-gray-500" data-i18n="play_summary">Tu selección:</p><div id="selection-display" class="flex gap-2 mt-2 min-h-[40px]"><span class="text-gray-400 text-sm italic">Selecciona números para continuar...</span></div></div>
+                            <button id="btn-checkout" onclick="alert('Redirigiendo a pasarela de pago...');" class="bg-gray-300 text-gray-500 cursor-not-allowed px-8 py-3 rounded-lg font-bold transition-all w-full sm:w-auto" disabled><span data-i18n="btn_buy_ticket">Pagar Boleto ($5.00)</span></button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="view-scans" class="view-section hidden max-w-6xl mx-auto space-y-8 animate-fade-in">
-                <div>
-                    <h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_scans_title">Mis Escaneos</h3>
-                    <div class="bg-gray-50 border border-dashed border-gray-300 p-8 rounded-xl text-center col-span-full">
-                        <i class="fa-solid fa-file-invoice text-3xl text-gray-300 mb-3"></i>
-                        <p class="text-gray-500 font-medium">No hay escaneos disponibles en tu bóveda.</p>
-                    </div>
-                </div>
+                <div><h3 class="text-2xl font-serif font-bold text-brand-text mb-2" data-i18n="view_scans_title">Mis Escaneos</h3><div class="bg-gray-50 border border-dashed border-gray-300 p-8 rounded-xl text-center col-span-full"><i class="fa-solid fa-file-invoice text-3xl text-gray-300 mb-3"></i><p class="text-gray-500 font-medium">No hay escaneos disponibles en tu bóveda.</p></div></div>
             </div>
 
             <div id="view-wallet" class="view-section hidden max-w-6xl mx-auto space-y-8 animate-fade-in">
@@ -346,12 +234,8 @@
                         <p class="text-sm text-gray-400 font-medium uppercase tracking-wider mb-2">Balance Actual</p>
                         <h3 id="saldo-wallet" class="text-4xl font-bold text-brand-text mb-8">$0.00</h3>
                         <div class="flex flex-col sm:flex-row gap-4 border-t border-gray-50 pt-8">
-                            <button id="btn-dep-wallet" onclick="openModal('modal-deposit')" class="flex-1 bg-brand-text text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors flex justify-center items-center">
-                                <i class="fa-solid fa-plus mr-2 text-brand-gold"></i> Depositar
-                            </button>
-                            <button id="btn-wit-wallet" onclick="openModal('modal-withdraw')" class="flex-1 bg-white text-brand-text border border-gray-200 px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors flex justify-center items-center">
-                                <i class="fa-solid fa-arrow-right-arrow-left mr-2 text-gray-400"></i> Retirar
-                            </button>
+                            <button onclick="openModal('modal-deposit')" class="flex-1 bg-brand-text text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors flex justify-center items-center"><i class="fa-solid fa-plus mr-2 text-brand-gold"></i> Depositar</button>
+                            <button onclick="openModal('modal-withdraw')" class="flex-1 bg-white text-brand-text border border-gray-200 px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors flex justify-center items-center"><i class="fa-solid fa-arrow-right-arrow-left mr-2 text-gray-400"></i> Retirar</button>
                         </div>
                     </div>
                 </div>
@@ -360,29 +244,8 @@
             <div id="view-settings" class="view-section hidden max-w-4xl mx-auto space-y-8">
                 <h3 class="text-2xl font-serif font-bold text-brand-text mb-6">Configuración de Cuenta</h3>
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-8">
-                    <div class="flex items-center space-x-6 border-b border-gray-50 pb-8">
-                        <div class="relative group cursor-pointer">
-                            <div class="w-20 h-20 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center text-3xl font-bold text-brand-gold" id="settings-avatar">U</div>
-                        </div>
-                        <div>
-                            <h4 class="text-xl font-bold" id="settings-name">Nombre</h4>
-                            <p class="text-sm text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded-full mt-1" id="settings-rol">CLIENTE</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="font-bold mb-4 flex items-center"><i class="fa-solid fa-shield-check mr-2 text-brand-gold"></i> Verificaciones de Seguridad</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-envelope text-gray-400 text-xl"></i>
-                                    <div>
-                                        <p class="text-sm font-bold text-gray-700">Correo Electrónico</p>
-                                        <p class="text-xs text-gray-500" id="settings-email">correo@ejemplo.com</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="flex items-center space-x-6 border-b border-gray-50 pb-8"><div class="relative group cursor-pointer"><div class="w-20 h-20 rounded-full bg-brand-goldLight border-2 border-brand-gold flex items-center justify-center text-3xl font-bold text-brand-gold" id="settings-avatar">U</div></div><div><h4 class="text-xl font-bold" id="settings-name">Nombre</h4><p class="text-sm text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded-full mt-1" id="settings-rol">CLIENTE</p></div></div>
+                    <div><h4 class="font-bold mb-4 flex items-center"><i class="fa-solid fa-shield-check mr-2 text-brand-gold"></i> Verificaciones de Seguridad</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50"><div class="flex items-center space-x-3"><i class="fa-solid fa-envelope text-gray-400 text-xl"></i><div><p class="text-sm font-bold text-gray-700">Correo Electrónico</p><p class="text-xs text-gray-500" id="settings-email">correo@ejemplo.com</p></div></div></div></div></div>
                 </div>
             </div>
 
@@ -391,44 +254,8 @@
 
     <script>
         const translations = {
-            es: {
-                nav_dashboard: "Mi Bóveda", nav_buy: "Comprar Boletos", nav_scans: "Mis Escaneos", nav_wallet: "Billetera", nav_settings: "Ajustes", nav_logout: "Cerrar Sesión",
-                header_greeting: "Hola,", header_date: "Cargando fecha...",
-                dash_balance_title: "Balance Disponible", btn_deposit: "Depositar", btn_withdraw: "Retirar",
-                dash_winnings_title: "Premios Acumulados", dash_winnings_desc: "Sigue jugando, el próximo ganador podrías ser tú.",
-                section_vault: "Boletos Activos", section_upcoming: "Próximos Grandes Sorteos",
-                btn_view_scan: "Ver Escaneo", view_buy_title: "Comprar Boletos", view_buy_desc: "Selecciona tu lotería favorita y juega ahora.",
-                btn_select_numbers: "Seleccionar Números", btn_back: "Volver a Loterías", jackpot_label: "PREMIO MAYOR",
-                play_step1: "1. Elige 5 números", btn_quick: "Selección Rápida", play_step2: "2. Elige 1 Powerball",
-                play_summary: "Tu selección:", btn_buy_ticket: "Pagar Boleto ($5.00)",
-                view_scans_title: "Mis Escaneos", view_scans_desc: "Visualiza tus boletos físicos en custodia.",
-                view_wallet_title: "Mi Billetera", view_settings_title: "Ajustes de Cuenta",
-                modal_scan_title: "Boleto Oficial Protegido", modal_scan_desc: "Este documento está bajo custodia física en nuestras bóvedas.",
-                modal_dep_title: "Depositar Fondos", modal_dep_amount: "Monto", modal_dep_method: "Método de Pago",
-                modal_dep_inst_title: "Instrucciones:", modal_dep_inst_desc: "Envía a la siguiente dirección.", btn_confirm_dep: "Notificar Pago",
-                modal_wit_title: "Solicitar Retiro", modal_wit_avail: "Balance Disponible:", modal_wit_dest: "Billetera Destino", btn_confirm_wit: "Solicitar",
-                notif_title: "Notificaciones", notif_new: "0 Nuevas", notif_view_all: "Ver todas",
-                menu_profile: "Mi Perfil", menu_help: "Ayuda y Soporte"
-            },
-            en: {
-                nav_dashboard: "My Vault", nav_buy: "Buy Tickets", nav_scans: "My Scans", nav_wallet: "Wallet", nav_settings: "Settings", nav_logout: "Log Out",
-                header_greeting: "Hello,", header_date: "Loading date...",
-                dash_balance_title: "Available Balance", btn_deposit: "Deposit", btn_withdraw: "Withdraw",
-                dash_winnings_title: "Accumulated Winnings", dash_winnings_desc: "Keep playing, the next winner could be you.",
-                section_vault: "Active Tickets", section_upcoming: "Upcoming Big Draws",
-                btn_view_scan: "View Scan", view_buy_title: "Buy Tickets", view_buy_desc: "Select your favorite lottery and play now.",
-                btn_select_numbers: "Select Numbers", btn_back: "Back to Lotteries", jackpot_label: "JACKPOT",
-                play_step1: "1. Pick 5 numbers", btn_quick: "Quick Pick", play_step2: "2. Pick 1 Powerball",
-                play_summary: "Your selection:", btn_buy_ticket: "Pay Ticket ($5.00)",
-                view_scans_title: "My Scans", view_scans_desc: "View your physical tickets in custody.",
-                view_wallet_title: "My Wallet", view_settings_title: "Account Settings",
-                modal_scan_title: "Protected Official Ticket", modal_scan_desc: "This document is under physical custody in our vaults.",
-                modal_dep_title: "Deposit Funds", modal_dep_amount: "Amount", modal_dep_method: "Payment Method",
-                modal_dep_inst_title: "Instructions:", modal_dep_inst_desc: "Send to the following address.", btn_confirm_dep: "Notify Payment",
-                modal_wit_title: "Request Withdrawal", modal_wit_avail: "Available Balance:", modal_wit_dest: "Destination Wallet", btn_confirm_wit: "Request",
-                notif_title: "Notifications", notif_new: "0 New", notif_view_all: "View all",
-                menu_profile: "My Profile", menu_help: "Help & Support"
-            }
+            es: { nav_dashboard: "Mi Bóveda", nav_buy: "Comprar Boletos", nav_scans: "Mis Escaneos", nav_wallet: "Billetera", nav_settings: "Ajustes", nav_logout: "Cerrar Sesión", header_greeting: "Hola,", header_date: "Cargando fecha...", dash_balance_title: "Balance Disponible", btn_deposit: "Depositar", btn_withdraw: "Retirar", dash_winnings_title: "Premios Acumulados", dash_winnings_desc: "Sigue jugando, el próximo ganador podrías ser tú.", section_vault: "Boletos Activos", section_upcoming: "Próximos Grandes Sorteos", btn_view_scan: "Ver Escaneo", view_buy_title: "Comprar Boletos", view_buy_desc: "Selecciona tu lotería favorita y juega ahora.", btn_select_numbers: "Seleccionar Números", btn_back: "Volver a Loterías", jackpot_label: "PREMIO MAYOR", play_step1: "1. Elige 5 números", btn_quick: "Selección Rápida", play_step2: "2. Elige 1 Powerball", play_summary: "Tu selección:", btn_buy_ticket: "Pagar Boleto ($5.00)", view_scans_title: "Mis Escaneos", view_scans_desc: "Visualiza tus boletos físicos en custodia.", view_wallet_title: "Mi Billetera", view_settings_title: "Ajustes de Cuenta", modal_scan_title: "Boleto Oficial Protegido", modal_scan_desc: "Este documento está bajo custodia física en nuestras bóvedas.", modal_dep_title: "Depositar Fondos", modal_dep_amount: "Monto", modal_dep_method: "Método de Pago", modal_dep_inst_title: "Instrucciones:", modal_dep_inst_desc: "Realiza el pago y coloca el número de referencia arriba para que el administrador lo valide.", btn_confirm_dep: "Notificar Pago", modal_wit_title: "Solicitar Retiro", modal_wit_avail: "Balance Disponible:", modal_wit_dest: "Billetera Destino", btn_confirm_wit: "Solicitar", menu_profile: "Mi Perfil" },
+            en: { nav_dashboard: "My Vault", nav_buy: "Buy Tickets", nav_scans: "My Scans", nav_wallet: "Wallet", nav_settings: "Settings", nav_logout: "Log Out", header_greeting: "Hello,", header_date: "Loading date...", dash_balance_title: "Available Balance", btn_deposit: "Deposit", btn_withdraw: "Withdraw", dash_winnings_title: "Accumulated Winnings", dash_winnings_desc: "Keep playing, the next winner could be you.", section_vault: "Active Tickets", section_upcoming: "Upcoming Big Draws", btn_view_scan: "View Scan", view_buy_title: "Buy Tickets", view_buy_desc: "Select your favorite lottery and play now.", btn_select_numbers: "Select Numbers", btn_back: "Back to Lotteries", jackpot_label: "JACKPOT", play_step1: "1. Pick 5 numbers", btn_quick: "Quick Pick", play_step2: "2. Pick 1 Powerball", play_summary: "Your selection:", btn_buy_ticket: "Pay Ticket ($5.00)", view_scans_title: "My Scans", view_scans_desc: "View your physical tickets in custody.", view_wallet_title: "My Wallet", view_settings_title: "Account Settings", modal_scan_title: "Protected Official Ticket", modal_scan_desc: "This document is under physical custody in our vaults.", modal_dep_title: "Deposit Funds", modal_dep_amount: "Amount", modal_dep_method: "Payment Method", modal_dep_inst_title: "Instructions:", modal_dep_inst_desc: "Make the payment and place the reference number above for the admin to validate.", btn_confirm_dep: "Notify Payment", modal_wit_title: "Request Withdrawal", modal_wit_avail: "Available Balance:", modal_wit_dest: "Destination Wallet", btn_confirm_wit: "Request", menu_profile: "My Profile" }
         };
 
         let currentLanguage = 'es';
@@ -442,7 +269,6 @@
             updateCheckoutBtn(); 
         }
 
-        // --- Navegación SPA ---
         function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             const targetView = document.getElementById(viewId);
@@ -452,33 +278,28 @@
                 link.classList.remove('bg-brand-goldLight', 'text-brand-gold');
                 link.classList.add('text-gray-500');
                 if (link.getAttribute('data-target') === viewId) {
-                    link.classList.remove('text-gray-500');
-                    link.classList.add('bg-brand-goldLight', 'text-brand-gold');
+                    link.classList.remove('text-gray-500'); link.classList.add('bg-brand-goldLight', 'text-brand-gold');
                 }
             });
             const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenu && !mobileMenu.classList.contains('hidden')) toggleMobileMenu();
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) mobileMenu.classList.toggle('hidden');
         }
 
         function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
-        function toggleNotifications(event) { event.stopPropagation(); document.getElementById('dropdown-profile').classList.add('hidden'); document.getElementById('dropdown-notifications').classList.toggle('hidden'); }
-        function toggleProfileMenu(event) { event.stopPropagation(); document.getElementById('dropdown-notifications').classList.add('hidden'); document.getElementById('dropdown-profile').classList.toggle('hidden'); }
-        function closeDropdowns() { document.getElementById('dropdown-notifications').classList.add('hidden'); document.getElementById('dropdown-profile').classList.add('hidden'); }
+        function toggleProfileMenu(event) { event.stopPropagation(); document.getElementById('dropdown-profile').classList.toggle('hidden'); }
+        function closeDropdowns() { document.getElementById('dropdown-profile').classList.add('hidden'); }
         
         document.addEventListener('click', function(event) {
-            const dropNotif = document.getElementById('dropdown-notifications');
             const dropProfile = document.getElementById('dropdown-profile');
-            if (dropNotif && !dropNotif.classList.contains('hidden') && !dropNotif.contains(event.target) && !document.getElementById('btn-notifications').contains(event.target)) dropNotif.classList.add('hidden');
             if (dropProfile && !dropProfile.classList.contains('hidden') && !dropProfile.contains(event.target) && !document.getElementById('btn-profile').contains(event.target)) dropProfile.classList.add('hidden');
         });
 
-        // --- Lógica de la Base de Datos (Inyectar datos reales) ---
+        // --- INYECCIÓN DE DATOS DE LA BASE ---
         document.addEventListener('DOMContentLoaded', () => {
             const usuarioStr = localStorage.getItem('usuario');
             if (!usuarioStr) { window.location.href = '/login.html'; return; }
             const usuario = JSON.parse(usuarioStr);
             
-            // 1. Textos Dinámicos
             document.getElementById('user-greeting-name').innerText = usuario.nombre;
             document.getElementById('dropdown-name').innerText = usuario.nombre + " " + (usuario.apellido || '');
             document.getElementById('dropdown-email').innerText = usuario.email;
@@ -492,57 +313,73 @@
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('header-date').innerText = new Date().toLocaleDateString('es-ES', dateOptions);
 
-            // 2. Saldos
             const saldoFormat = '$' + parseFloat(usuario.saldo || 0).toFixed(2);
             document.getElementById('saldo-principal').innerText = saldoFormat;
             document.getElementById('saldo-wallet').innerText = saldoFormat;
             document.getElementById('modal-saldo-retiro').innerText = saldoFormat;
 
-            // 3. BLOQUEO KYC (Seguridad Financiera)
             if (usuario.estado_kyc === 'PENDIENTE') {
                 document.getElementById('kyc-banner').classList.remove('hidden');
-                
-                // Sobrescribir función para abrir modales de dinero
                 window.openModal = function(id) {
                     if(id === 'modal-deposit' || id === 'modal-withdraw') {
-                        alert('⚠️ Acción Bloqueada: Tu identidad no ha sido verificada aún.');
-                        return;
+                        alert('⚠️ Acción Bloqueada: Tu identidad no ha sido verificada aún.'); return;
                     }
                     document.getElementById(id).classList.remove('hidden');
                 };
             }
         });
 
-        // Mantener función original de abrir modal para uso general
         if(typeof window.openModal === 'undefined') {
             window.openModal = function(id) { document.getElementById(id).classList.remove('hidden'); };
         }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        // --- Lógica del Juego (Powerball) INTACTA ---
+        // --- ENVIAR DEPÓSITO AL ADMIN ---
+        function enviarDeposito() {
+            const monto = document.getElementById('dep-monto').value;
+            const ref = document.getElementById('dep-ref').value;
+            const metodoElem = document.querySelector('input[name="payment"]:checked');
+            const metodo = metodoElem ? metodoElem.value : 'USDT';
+            
+            if(!monto || !ref) {
+                alert('Por favor completa el monto y la referencia de la transacción.');
+                return;
+            }
+
+            const usuarioStr = localStorage.getItem('usuario');
+            if(!usuarioStr) return;
+            const usuario = JSON.parse(usuarioStr);
+
+            fetch('/api/cliente/deposito', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario_id: usuario.id, monto: monto, metodo: metodo, referencia: ref })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.mensaje);
+                if(data.exito) {
+                    closeModal('modal-deposit');
+                    document.getElementById('dep-monto').value = '';
+                    document.getElementById('dep-ref').value = '';
+                }
+            })
+            .catch(err => alert('Error enviando la notificación de pago.'));
+        }
+
+        // --- LÓGICA DEL JUEGO (POWERBALL) ---
         let selectedNumbers = []; let selectedPowerball = null;
 
         function initGrid() {
-            const numGrid = document.getElementById('number-grid');
-            const pbGrid = document.getElementById('powerball-grid');
+            const numGrid = document.getElementById('number-grid'); const pbGrid = document.getElementById('powerball-grid');
             numGrid.innerHTML = ''; pbGrid.innerHTML = '';
-
-            for (let i = 1; i <= 69; i++) {
-                const btn = document.createElement('div'); btn.className = 'pick-ball'; btn.innerText = i;
-                btn.onclick = () => toggleNumber(i, btn); numGrid.appendChild(btn);
-            }
-            for (let i = 1; i <= 26; i++) {
-                const btn = document.createElement('div'); btn.className = 'pick-powerball'; btn.innerText = i;
-                btn.onclick = () => selectPowerball(i, btn); pbGrid.appendChild(btn);
-            }
+            for (let i = 1; i <= 69; i++) { const btn = document.createElement('div'); btn.className = 'pick-ball'; btn.innerText = i; btn.onclick = () => toggleNumber(i, btn); numGrid.appendChild(btn); }
+            for (let i = 1; i <= 26; i++) { const btn = document.createElement('div'); btn.className = 'pick-powerball'; btn.innerText = i; btn.onclick = () => selectPowerball(i, btn); pbGrid.appendChild(btn); }
         }
 
         function toggleNumber(num, el) {
-            if (selectedNumbers.includes(num)) {
-                selectedNumbers = selectedNumbers.filter(n => n !== num); el.classList.remove('selected');
-            } else if (selectedNumbers.length < 5) {
-                selectedNumbers.push(num); el.classList.add('selected');
-            }
+            if (selectedNumbers.includes(num)) { selectedNumbers = selectedNumbers.filter(n => n !== num); el.classList.remove('selected'); } 
+            else if (selectedNumbers.length < 5) { selectedNumbers.push(num); el.classList.add('selected'); }
             updateSelectionDisplay();
         }
 
@@ -564,36 +401,27 @@
         }
 
         function updateSelectionDisplay() {
-            const display = document.getElementById('selection-display');
-            const btnCheckout = document.getElementById('btn-checkout');
-            const usuarioStr = localStorage.getItem('usuario');
-            const usuario = usuarioStr ? JSON.parse(usuarioStr) : { estado_kyc: 'PENDIENTE' };
+            const display = document.getElementById('selection-display'); const btnCheckout = document.getElementById('btn-checkout');
+            const usuarioStr = localStorage.getItem('usuario'); const usuario = usuarioStr ? JSON.parse(usuarioStr) : { estado_kyc: 'PENDIENTE' };
             
-            if (selectedNumbers.length === 0 && !selectedPowerball) {
-                display.innerHTML = `<span class="text-gray-400 text-sm italic">${currentLanguage === 'es' ? 'Selecciona números...' : 'Select numbers...'}</span>`;
-            } else {
+            if (selectedNumbers.length === 0 && !selectedPowerball) { display.innerHTML = `<span class="text-gray-400 text-sm italic">${currentLanguage === 'es' ? 'Selecciona números...' : 'Select numbers...'}</span>`; } 
+            else {
                 display.innerHTML = '';
                 selectedNumbers.sort((a,b)=>a-b).forEach(n => { display.innerHTML += `<div class="lotto-ball !w-8 !h-8 !text-xs">${n}</div>`; });
                 if (selectedPowerball) { display.innerHTML += `<div class="lotto-ball powerball !w-8 !h-8 !text-xs">${selectedPowerball}</div>`; }
             }
 
-            // Habilitar boton de pago si el KYC está aprobado y eligió los números
             if (selectedNumbers.length === 5 && selectedPowerball) {
                 if (usuario.estado_kyc === 'PENDIENTE') {
-                    btnCheckout.disabled = true;
-                    btnCheckout.querySelector('span').innerText = 'Verificación Pendiente';
+                    btnCheckout.disabled = true; btnCheckout.querySelector('span').innerText = 'Verificación Pendiente';
                     btnCheckout.onclick = () => alert('⚠️ Acción Bloqueada: Tu identidad no ha sido verificada aún.');
                 } else {
-                    btnCheckout.disabled = false;
-                    btnCheckout.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-                    btnCheckout.classList.add('bg-brand-text', 'text-white', 'hover:bg-gray-800');
+                    btnCheckout.disabled = false; btnCheckout.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed'); btnCheckout.classList.add('bg-brand-text', 'text-white', 'hover:bg-gray-800');
                     btnCheckout.querySelector('span').innerText = translations[currentLanguage]['btn_buy_ticket'];
                     btnCheckout.onclick = () => alert('Redirigiendo a pasarela de pago...');
                 }
             } else {
-                btnCheckout.disabled = true;
-                btnCheckout.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-                btnCheckout.classList.remove('bg-brand-text', 'text-white', 'hover:bg-gray-800');
+                btnCheckout.disabled = true; btnCheckout.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed'); btnCheckout.classList.remove('bg-brand-text', 'text-white', 'hover:bg-gray-800');
                 btnCheckout.querySelector('span').innerText = translations[currentLanguage]['btn_buy_ticket'];
             }
         }
