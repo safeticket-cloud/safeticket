@@ -41,10 +41,19 @@ app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const [rows] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
-    if (rows.length === 0 || !(await bcrypt.compare(password, rows[0].clave_hash))) return res.status(401).json({ exito: false, mensaje: 'Datos incorrectos.' });
+    
+    if (rows.length === 0 || !(await bcrypt.compare(password, rows[0].clave_hash))) {
+      return res.status(401).json({ exito: false, mensaje: 'Datos incorrectos.' });
+    }
+    
     const u = rows[0];
     res.json({ exito: true, usuario: { id: u.id, nombre: u.nombre, apellido: u.apellido, email: u.email, rol: u.rol, saldo: u.saldo_disponible, estado_kyc: u.estado_kyc } });
-  } catch (error) { res.status(500).json({ exito: false }); }
+    
+  } catch (error) { 
+    // 👇 ESTAS DOS LÍNEAS SON LA CLAVE AHORA 👇
+    console.error("🔥 ERROR CRÍTICO EN LOGIN:", error); 
+    res.status(500).json({ exito: false, mensaje: "Error interno", detalle: error.message }); 
+  }
 });
 
 // Ruta para refrescar datos del usuario (saldo, kyc, etc)
